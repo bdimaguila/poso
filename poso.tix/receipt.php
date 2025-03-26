@@ -8,7 +8,6 @@ include 'connection.php'; // Ensure the path is correct
 // Get the ticket number from the session
 $ticket_number = $_GET['ticket_number']; // Get from URL
 
-
 // Get the first name, last name, and total from the URL
 $first_name = $_GET['first_name'];
 $last_name = $_GET['last_name'];
@@ -28,7 +27,7 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 // Fetch officer information (combine lastname and firstname from hh_login table)
-$sql_officer = "SELECT CONCAT(lastname, ', ', firstname) AS officer_name FROM hh_login LIMIT 1"; 
+$sql_officer = "SELECT CONCAT(lastname, ', ', firstname) AS officer_name FROM hh_login LIMIT 1";
 $stmt_officer = $conn->prepare($sql_officer);
 $stmt_officer->execute();
 $officer_result = $stmt_officer->get_result();
@@ -54,7 +53,7 @@ $city = $violator['city'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POSO Violation Receipt</title>
-    <link rel="stylesheet" href="style.css?v=1.0">
+    <link rel="stylesheet" href="style1.css?v=1.0">
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <style>
         .impound-warning {
@@ -75,11 +74,11 @@ $city = $violator['city'];
             margin-top: 20px;
         }
         button {
-            width: 120px;      /* Set a specific width */
-            height: 35px;      /* Set a specific height */
+            width: 120px;    /* Set a specific width */
+            height: 35px;    /* Set a specific height */
             padding: 0;        /* Remove padding */
-            font-size: 14px;   /* Smaller font size */
-            margin: 5px;       /* Reduced margin */
+            font-size: 14px;    /* Smaller font size */
+            margin: 5px;        /* Reduced margin */
             display: inline-block;
         }
         table {
@@ -96,31 +95,30 @@ $city = $violator['city'];
             background-color: #f0f0f0;
         }
  @media print {
-        * {
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
 
-        .button-container {
-            display: none; /* Hide buttons during printing */
-        }
+            .button-container {
+                display: none; /* Hide buttons during printing */
+            }
 
-        .container {
-            width: 100%; /* Expand to full width for print */
-        }
+            .container {
+                width: 100%; /* Expand to full width for print */
+            }
 
-        .ticket-container {
-            margin: 0;
-            border: none; /* Adjust for clean edges in print */
-        }
-    }    </style>
+            .ticket-container {
+                margin: 0;
+                border: none; /* Adjust for clean edges in print */
+            }
+        }    </style>
 </head>
 <body>
     <div class="container">
         <?php if ($result->num_rows > 0) : ?>
             <div class="ticket-container">
-                <!-- Header -->
-                <div class="header-container d-flex justify-content-between align-items-center"> 
+                <div class="header-container d-flex justify-content-between align-items-center">
                     <img src="/POSO/images/left.png" alt="Left Logo" class="logo">
                     <div class="col text-center">
                         <p class="title">Traffic Violations</p>
@@ -129,12 +127,10 @@ $city = $violator['city'];
                     <img src="/POSO/images/arman.png" alt="Right Logo" class="logo">
                 </div>
 
-                <!-- Ticket Information -->
                 <div class="ticket-info">
                     <p class="ticket-label">Ordinance Infraction Ticket</p>
                     <p class="ticket-number">No. <?php echo htmlspecialchars($ticket_number); ?></p>
                 </div>
- <!-- Officer Information -->
 <div class="gray">
     <h3>Officer Information</h3>
 </div>
@@ -142,7 +138,6 @@ $city = $violator['city'];
 <p>Street: <?php echo htmlspecialchars($street); ?></p>
 <p>City/Municipality: <?php echo htmlspecialchars($city); ?></p>
 
-                <!-- Violator Information -->
                 <div class="gray">
                     <h3>Violator Information</h3>
                 </div>
@@ -150,7 +145,6 @@ $city = $violator['city'];
                 <p>License Number: <?php echo htmlspecialchars($license_number); ?></p>
                 <p>Plate Number: <?php echo htmlspecialchars($plate_number); ?></p>
                 
-                <!-- Violation Breakdown -->
                 <div class="gray">
                     <h3>BREAKDOWN OF VIOLATION CHARGES</h3>
                 </div>
@@ -162,115 +156,169 @@ $city = $violator['city'];
                             <th>AMOUNT</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php
-                        $impoundFound = false; // Flag to track if "IMPOUNDED" is found in any violation
+                  <tbody>
+    <?php
+    $impoundFound = false;
+    $violation_columns = [
+        'FTWH' => 'FAILURE TO WEAR HELMET',
+        'OMN' => 'OPEN MUFFLER/NUISANCE',
+        'ARG' => 'ARROGANT',
+        'ONEWAY' => 'ONEWAY',
+        'ILP' => 'ILLEGAL PARKING',
+        'DWL' => 'DRIVING WITHOUT LICENSE/INVALID LICENSE',
+        'NORCR' => 'NO OR/CR WHILE DRIVING',
+        'DUV' => 'DRIVING UNREGISTERED VEHICLE',
+        'UMV' => 'UNREGISTERED MOTOR VEHICLE',
+        'OBS' => 'OBSTRUCTION',
+        'DTS' => 'DISREGARDING TRAFFIC SIGNS',
+        'DTO' => 'DISREGARDING TRAFFIC OFFICER',
+        'TRB' => 'TRUCK BAN',
+        'STV' => 'STALLED VEHICLE',
+        'RCD' => 'RECKLESS DRIVING',
+        'DUL' => 'DRIVING UNDER THE INFLUENCE OF LIQUOR',
+        'INF' => 'INVALID OR NO FRANCHISE/COLORUM',
+        'OOL' => 'OPERATING OUT OF LINE',
+        'TCT' => 'TRIP - CUTTING',
+        'OVL' => 'OVERLOADING',
+        'LUZ' => 'LOADING/UNLOADING IN PROHIBITED ZONE',
+        'IVA' => 'INVOLVE IN ACCIDENT',
+        'SMB' => 'SMOKE BELCHING',
+        'NSM' => 'NO SIDE MIRROR',
+        'JWK' => 'JAY WALKING',
+        'WSS' => 'WEARING SLIPPERS/SHORTS/SANDO',
+        'ILV' => 'ILLEGAL VENDING',
+        'IMP' => 'IMPOUNDED'
+    ];
 
-                        while ($violation = $result->fetch_assoc()) {
-                            $violation_details = htmlspecialchars($violation['first_violation'] ?? $violation['second_violation'] ?? $violation['third_violation']);
-                            $violation_amount = htmlspecialchars($violation['first_total'] ?? $violation['second_total'] ?? $violation['third_total']);
+    while ($violation = $result->fetch_assoc()) {
+        $violation_details = htmlspecialchars($violation['first_violation'] ?? $violation['second_violation'] ?? $violation['third_violation']);
+        $violation_amount = htmlspecialchars($violation['first_total'] ?? $violation['second_total'] ?? $violation['third_total']);
+        $formatted_violation_details = str_replace(", ", "<br>", $violation_details);
 
-                            // Replace commas with line breaks for displaying each violation per line
-                            $formatted_violation_details = str_replace(", ", "<br>", $violation_details);
-
-                            // Check if "IMPOUNDED" exists in the violation details (case-insensitive)
-                            if (stripos($violation_details, 'IMPOUNDED') !== false) {
-                                $impoundFound = true; // Set the flag to true
-                            }
-
-                            echo "<tr>
-                                <td>" . htmlspecialchars($violation['violation_type']) . "</td>
-                                <td>" . $formatted_violation_details . "</td>
-                                <td>" . $violation_amount . "</td>
-                            </tr>";
-                        }
-
-                        // Display the impound warning if the flag is set
-                        if ($impoundFound) {
-                            echo "<tr><td colspan='3' class='impound-warning'>THIS VIOLATOR IS SUBJECT FOR VEHICLE IMPOUND.</td></tr>";
-                        }
-
-                        // Handle case where no violations are found
-                        if ($result->num_rows == 0) {
-                            echo "<tr><td colspan='3'>No violations found.</td></tr>";
-                        }
-                        ?>
-                    </tbody>
-                </table>
-
-                <!-- Notes Section -->
-                <br>
-                <h4>NOTES:</h4>
-                <ul>
-                    <?php
-                    // Reset the result pointer to fetch notes
-                    $result->data_seek(0); // Move to the first record
-                    while ($violation = $result->fetch_assoc()) {
-                        echo "<li>" . htmlspecialchars($violation['notes']) . "</li>";
-                    }
-                    ?>
-                </ul>
-                <p class="compliance-message">PLEASE PROCEED TO OFFICE OF THE CITY TREASURER. THANK YOU FOR YOUR COMPLIANCE.</p>
-
-                <!-- Buttons -->
-                <div class="button-container">
-                    <button id="printButton" onclick="printReceipt()">Print</button>
-                    <button id="nextButton" class="btn btn-secondary" onclick="goToNextPage()">Next</button>
-
-                </div>
-            </div>
-        <?php else : ?>
-            <p>No violation records found for this individual.</p>
-        <?php endif; ?>
-    </div>
-
-    <script>
-function printReceipt() {
-    try {
-        // Hide the buttons before starting the print process
-        document.querySelector('.button-container').style.display = 'none';
-
-        // Check if the device-specific API is available
-        if (typeof InnerPrinter !== "undefined" && InnerPrinter.print) {
-            const receiptContent = document.querySelector('.container').innerHTML;
-
-            // Format the content for printing if needed
-            const formattedContent = `
-                <html>
-                    <head>
-                        <title>Receipt</title>
-                    </head>
-                    <body>
-                        ${receiptContent}
-                    </body>
-                </html>
-            `;
-
-            // Use the InnerPrinter SDK to send data to the printer
-            InnerPrinter.print(formattedContent, function (success) {
-                if (success) {
-                    alert("Printed successfully!");
-                } else {
-                    alert("Failed to print. Please try again.");
-                }
-            });
-        } else {
-            // Fallback for browser printing
-            window.print();
+        if (stripos($violation_details, 'IMPOUNDED') !== false) {
+            $impoundFound = true;
         }
-    } catch (error) {
-        console.error("Printing error: ", error);
-        alert("Printing failed. Check your printer connection.");
-    } finally {
-        // Re-enable the buttons after printing is done
-        document.querySelector('.button-container').style.display = 'block';
+
+        if ($violation_amount >= 1) {
+            $sql_discount = "SELECT * FROM discount WHERE ticket_number = ? AND license = ?";
+            $stmt_discount = $conn->prepare($sql_discount);
+            $stmt_discount->bind_param("is", $ticket_number, $license_number);
+            $stmt_discount->execute();
+            $discount_result = $stmt_discount->get_result();
+            $discount = $discount_result->fetch_assoc();
+            $stmt_discount->close();
+
+            if ($discount) {
+                $discount_applied = false;
+                foreach ($violation_columns as $col => $violation_name) {
+                    if ($discount[$col] !== null) {
+                        echo "<tr>
+                                <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                                <td>" . htmlspecialchars($violation_name) . "</td>
+                                <td>" . htmlspecialchars($discount[$col]) . "</td>
+                            </tr>";
+                        $discount_applied = true;
+                    }
+                }
+                if (!$discount_applied) {
+                    echo "<tr>
+                            <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                            <td>" . $formatted_violation_details . "</td>
+                            <td>" . $violation_amount . "</td>
+                        </tr>";
+                }
+                //check if OTHERS and OTHERS_P has value.
+                if ($discount['OTHERS'] !== null && $discount['OTHERS_P'] !== null) {
+                    echo "<tr>
+                            <td>OTHERS</td>
+                            <td>" . htmlspecialchars($discount['OTHERS']) . "</td>
+                            <td>" . htmlspecialchars($discount['OTHERS_P']) . "</td>
+                        </tr>";
+                }
+            } else {
+                echo "<tr>
+                        <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                        <td>" . $formatted_violation_details . "</td>
+                        <td>" . $violation_amount . "</td>
+                    </tr>";
+            }
+        }
     }
+
+    if ($impoundFound) {
+        echo "<tr><td colspan='3' class='impound-warning'>THIS VIOLATOR IS SUBJECT FOR VEHICLE IMPOUND.</td></tr>";
+    }
+
+    if ($result->num_rows == 0) {
+        echo "<tr><td colspan='3'>No violations found.</td></tr>";
+    }
+    ?>
+</tbody>
+            </table>
+<br>
+<h4>NOTES:</h4>
+<ul>
+<?php
+// Reset the result pointer to fetch notes
+$result->data_seek(0); // Move to the first record
+while ($violation = $result->fetch_assoc()) {
+echo "<li>" . htmlspecialchars($violation['notes']) . "</li>";
+}
+?>
+</ul>
+<p class="compliance-message">PLEASE PROCEED TO OFFICE OF THE CITY TREASURER. THANK YOU FOR YOUR COMPLIANCE.</p>
+
+            <div class="button-container">
+                <button id="printButton" onclick="printReceipt()">Print</button>
+                <button id="nextButton" class="btn btn-secondary" onclick="goToNextPage()">Next</button>
+
+            </div>
+        </div>
+    <?php else : ?>
+        <p>No violation records found for this individual.</p>
+    <?php endif; ?>
+</div>
+
+<script>
+function printReceipt() {
+try {
+document.querySelector('.button-container').style.display = 'none';
+
+    if (typeof InnerPrinter !== "undefined" && InnerPrinter.print) {
+        const receiptContent = document.querySelector('.container').innerHTML;
+
+        const formattedContent = `
+            <html>
+                <head>
+                    <title>Receipt</title>
+                </head>
+                <body>
+                    ${receiptContent}
+                </body>
+            </html>
+        `;
+
+        InnerPrinter.print(formattedContent, function (success) {
+            if (success) {
+                alert("Printed successfully!");
+            } else {
+                alert("Failed to print. Please try again.");
+            }
+        });
+    } else {
+        window.print();
+    }
+} catch (error) {
+    console.error("Printing error: ", error);
+    alert("Printing failed. Check your printer connection.");
+} finally {
+    document.querySelector('.button-container').style.display = 'block';
+}
 }
 
 function goToNextPage() {
-    // Retrieve the ticket number from the PHP variable
-    const ticketNumber = <?php echo json_encode($ticket_number); ?>;
-    window.location.href = "BLK.php?ticket_number=" + ticketNumber;
+const ticketNumber = <?php echo json_encode($ticket_number); ?>;
+window.location.href = "BLK.php?ticket_number=" + ticketNumber;
 }
 </script>
 </body>

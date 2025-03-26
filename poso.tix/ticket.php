@@ -47,7 +47,7 @@ $conn->close();
     <!-- Bootstrap CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/poso/poso.tix/style.css">
+    <link rel="stylesheet" href="/poso/poso.tix/style1.css">
     <style>
         /* FAB styling */
         .fab {

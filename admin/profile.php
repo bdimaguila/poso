@@ -95,18 +95,19 @@ try {
     </header>
 
 
-<div class="sidebar" id="sidebar">
+    <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="/POSO/images/right.png" alt="POSO Logo">
     </div>
     <ul>
-        <li><a href="dashboard.php" class="active"><i class="fas fa-home"></i> Home</a></li>
-        <li><a href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
+        <li><a href="dashboard.php"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="profile.php" class="active"> <i class="fas fa-user"></i> Profile</a></li>
         <li><a href="report.php"><i class="fas fa-file-alt"></i> Reports</a></li>
-        <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+        <li><a href="settings.php"> <i class="fas fa-cog"></i> Settings</a></li>
         <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
     </ul>
 </div>
+
 
         <?php
             $current_page = basename($_SERVER['PHP_SELF']); // Get the current file name

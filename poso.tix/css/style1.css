@@ -1,0 +1,287 @@
+/* Global reset and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #ffffff;
+    padding: 10px;
+}
+
+/* Center the container on the screen */
+.container {
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically */
+    min-height: 90vh;        /* Full viewport height for vertical centering */
+}
+
+/* Adjusted ticket-container for POS layout */
+.ticket-container {
+    width: 100%;
+    max-width: 425px; /* Ensures it's not too wide */
+    padding: 15px; /* Padding for content spacing */
+    margin: 20px auto;
+    border-radius: 8px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    height: auto; /* Allows dynamic height */
+    max-height: 800px; /* Limits height on larger screens */
+    background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('/POSO/images/poso.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Header container */
+.header-container {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0c1ddd;
+    height: 60px;
+    box-shadow: 0 4px 8px -2px rgb(80, 79, 79);
+    margin-bottom: 10px;
+}
+
+.logo {
+    padding: 5px;
+    width: 40px;
+    height: auto;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.city {
+    font-size: 10px;
+    color: white;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+/* Gray section styling */
+.gray, .gray1 {
+    color: #000;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    background-color: #d2d1d1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.gray { height: 30px; }
+.gray1 { height: 50px; padding: 5px; line-height: 1.7; }
+
+/* Ticket information styling */
+.ticket-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.ticket-label {
+    font-size: 13px;
+    color: #000;
+    font-weight: bold;
+    text-transform: uppercase;
+    padding: 10px;
+}
+
+.ticket-number {
+    font-size: 18px;
+    color: red;
+    font-weight: bold;
+    padding: 5px 10px;
+}
+
+/* Section for form fields and radio groups */
+.section {
+    position: relative;
+    margin-bottom: 15px;
+    padding: 10px;
+    overflow: hidden;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-weight: bold;
+}
+
+/* Table styling for violations */
+table {
+    width: 100%;
+    border-collapse: collapse; /* Remove space between table borders */
+    margin-top: 15px;
+    font-size: 14px; /* Adjust table font size for readability */
+}
+
+table th, table td {
+    padding: 10px;
+    text-align: center;
+    border: 2px solid #000; /* Add border to each cell */
+}
+
+table thead th {
+    background-color: #0c1ddd; /* Set a background color for header */
+    color: #fff;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+table tbody tr:nth-child(odd) {
+    background-color: #f9f9f9; /* Alternate row color for readability */
+}
+
+.total {
+    font-weight: bold;
+    color: #000;
+    text-transform: uppercase;
+    text-align: right;
+}
+
+.select2-container--default .select2-selection--multiple {
+    height: auto !important;
+    min-height: 40px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px;
+    border: 2px solid #a0d4fa;
+    background-color: #eef6fa;
+    border-radius: 4px;
+    font-size: 17px;
+}
+
+/* Form input styles */
+input[type="text"],
+input[type="date"],
+input[type="time"],
+input[type="password"],
+select {
+    height: 40px;
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #a0d4fa;
+    background-color: #eef6fa;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.radio-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+input[type="radio"] {
+    margin-right: 10px;
+}
+/* Button styling */
+button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .ticket-container {
+        margin: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ticket-container {
+        margin: 5px;
+        padding: 10px;
+    }
+}
+
+/* Specific responsive adjustments for smaller devices */
+@media only screen and (max-width: 1080px) {
+    .ticket-container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    h1 { font-size: 40px; }
+    label { font-size: 14px; }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 15px;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    .ticket-container {
+        padding: 5px;
+    }
+
+    h1 { font-size: 20px; }
+    .ticket-label { font-size: 14px; }
+    .ticket-number { font-size: 14px; }
+    label { font-size: 12px; }
+
+    input[type="text"], input[type="date"], input[type="time"] {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+.signature-section {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.canvas-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* DROPDOWN VIOLATION */

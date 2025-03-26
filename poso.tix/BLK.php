@@ -52,7 +52,7 @@ if ($ticket_number !== 'N/A') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POSO Signature</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style1.css">
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <style>
         .logo {
