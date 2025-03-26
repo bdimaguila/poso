@@ -16,15 +16,16 @@
 .bg {
     background-image: url("/POSO/images/db.jpg");
     position: fixed;
-    background-size: cover;       /* Ensures the image covers the entire element */
-    background-position: center;  /* Centers the image */
+    background-size: cover;       
+    background-position: center;  
     background-repeat: no-repeat; /* Prevents the image from repeating */
-    top: 0;                       /* Ensures it starts at the top of the page */
+    top: 0;                       
     left: 0;                      /* Aligns the background to the left */
     width: 100%;
     height: 100%;                /* Full viewport height */
-    z-index: -1;                  /* Sends the background image behind other content */
-    opacity: 0.7;
+    z-index: -1;                 
+    opacity: 1;
+    filter: brightness(50%); 
   }
 
   .navbar {
@@ -32,12 +33,11 @@
     align-items: center; /* Center items vertically */
     justify-content: center; /* Center items horizontally */
     margin-bottom: 20px; /* Space below the header */
-    background-color: #000000;
+    background-color: #00000080;
     color: white;
     border-bottom-style: outset;
-    border-color: rgb(234, 190, 34);
+    border-color: #95d6ff;
     border-width: 5px; /* Set the width of the border */
-
 }
 
 .public{
@@ -61,7 +61,7 @@ margin: 0 100px; /* Space between logo and text */
 /* Initially, the sidebar is hidden */
 .sidebar {
     width: 200px;
-    background-color: rgb(0, 0, 0);
+    background-color: #95d6ff;
     height: 100%;
     padding: 20px;
     display: flex;
@@ -71,7 +71,50 @@ margin: 0 100px; /* Space between logo and text */
     top: 0;
     left: -200px; /* Position the sidebar off-screen initially */
     transition: left 0.3s ease; /* Smooth transition for sliding effect */
+    box-shadow: 0px 4px 6px rgb(0, 0, 0); 
+
 }
+
+/* sidebar open  */
+/* Sidebar Styling */
+#sidebar {
+    width: 200px;
+    background-color: #95d6ff;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: -200px; /* Position the sidebar off-screen initially */
+    transition: left 0.3s ease; /* Smooth transition for sliding effect */
+    box-shadow: 0px 4px 6px rgb(0, 0, 0); 
+    z-index: 1001; /* Above overlay */
+}
+
+/* Show sidebar */
+#sidebar.show {
+    left: 0;
+}
+
+/* Overlay Styling */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.687); /* Dark transparent overlay */
+    display: none; /* Hidden by default */
+    z-index: 1000; /* Below sidebar */
+}
+
+/* Show overlay when sidebar is open */
+#overlay.show {
+    display: block;
+}
+/* sidebar close */
 
 /* Style for the hamburger icon */
 .hamburger {
@@ -111,14 +154,15 @@ margin: 0 100px; /* Space between logo and text */
 }
 
 .sidebar ul li :hover {
-   background-color: #95d6ff;
-   width: 100%;
+   background-color: #73b2d9;
+   width: 200px;
    border-radius: 5px;
-    color: black;
+  color: black;
+   font-weight: bold;
 }
 
 .sidebar ul li a {
-    color: #fff;
+    color: #000000;
     text-decoration: none;
     display: block;
     padding: 10px;
@@ -126,7 +170,9 @@ margin: 0 100px; /* Space between logo and text */
 }
 
 .sidebar ul li a.active {
-    background-color: #95d6ff;
+    background-color: #73b2d9;
+    width: 200px;
+    font-weight: bold;
     border-radius: 5px;
     color: rgb(0, 0, 0);
 }
@@ -212,7 +258,7 @@ header h1 {
     display: flex;
     justify-content: center; 
     align-items: center; 
-    background-color: #a0bcfa;
+    background-color: #95d6ff;
     width: auto;
     height: 3vh;
     font-size: 14px;
@@ -234,14 +280,13 @@ header h1 {
     align-self: center; /* Vertically center the content */
 }
 
-.info-container input, .info-container select {
+.info-container input, .info-container select, .select2-container--default .select2-selection--multiple{
     width: 100%;
     padding: 8px;
     border: 2px solid #075290;
     border-radius: 4px;
     box-sizing: border-box;
 }
-
 
 .sign{
     background-color: red;
@@ -292,9 +337,12 @@ padding: 10px;  /* Add some padding to avoid content touching the edges */
 box-sizing: border-box;  /* Ensure padding is included in the element's total width and height */
 margin: 10px auto;  /* Add some space around the form */
 text-align: left;  /* Align the content to the left */
+margin-top: 70px;
 }
 
-
+.spacer{
+    height:100px;
+}
 
 h3.title {
 text-align: center;  /* Center the title */
@@ -342,20 +390,24 @@ select:disabled {
 button[type="submit"] {
 background-color: #007bff; /* Green background */
 color: white; /* White text */
-border: none; /* No border */
+border: 2px solid #00438a; /* No border */
 padding: 12px 28px; /* Padding inside the button */
 text-align: center; /* Center the text */
 text-decoration: none; /* Remove underline */
 display: inline-block; /* Keep it inline */
-font-size: 12px; /* Font size */
+font-size: 16px; /* Font size */
 cursor: pointer; /* Pointer cursor on hover */
 border-radius: 8px; /* Rounded corners */
 transition: background-color 0.3s ease, transform 0.3s ease; /* Transition for hover effect */
+
+box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
 }
 
 button[type="submit"]:hover {
 background-color: #45a049; /* Darker green on hover */
 transform: scale(1.05); /* Slightly enlarge the button on hover */
+font-weight: bold;
+
 }
 
 button[type="submit"]:focus {
@@ -363,6 +415,14 @@ outline: none; /* Remove focus outline */
 }
 
 /* html */
+
+/* section */
+.section {
+    position: relative;
+    margin-bottom: 15px;
+    padding: 10px;
+    overflow: hidden;
+}
 
 
 

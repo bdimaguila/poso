@@ -144,7 +144,7 @@ if ($violation3) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"> </script>
 
-    <link rel="stylesheet" href="/poso/admin/css/sm1.css">
+    <link rel="stylesheet" href="/poso/admin/css/sm.css">
 
 
 </head>
