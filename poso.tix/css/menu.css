@@ -1,0 +1,184 @@
+/* Global reset and box-sizing */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styling */
+body {
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    height: 50vh;
+    margin: 0;
+}
+
+/* Center the container on the screen */
+.container {
+    display: flex;
+    justify-content: center;  /* Center horizontally */
+    align-items: center;      /* Center vertically */
+    height: 100vh;        /* Full viewport height for vertical centering */
+}
+
+/* Adjusted ticket-container for POS layout */
+.ticket-container {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;  /* Ensure header expands full width */
+    width: 100%;
+    max-width: 425px;
+    padding: 0; /* Remove padding */
+    margin: 0;  /* Remove margin */
+    border-radius: 0; /* Remove rounding */
+    overflow: hidden; /* Prevent extra space */
+    height: 100%;
+    max-height: 100%;
+    background-image: linear-gradient(rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.9)), url('/POSO/images/poso.png');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* Header container */
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0c1ddd;
+    height: 80px;
+    padding: 0;  /* Remove all padding */
+    margin: 0;   /* Remove any margin */
+    border-radius: 0; /* Remove any rounding */
+    box-shadow: 0 4px 8px -2px rgb(80, 79, 79);
+    width: 100%;
+    z-index: 10;
+}
+
+.logo {
+    padding: 5px;
+    width: 40px;
+    height: auto;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    text-transform: uppercase;
+    margin: 0;
+}
+
+.city {
+    font-size: 10px;
+    color: white;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+    .ticket-container {
+        margin: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .ticket-container {
+        margin: 5px;
+        padding: 10px;
+    }
+}
+
+/* Specific responsive adjustments for smaller devices */
+@media only screen and (max-width: 1080px) {
+    .ticket-container {
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    h1 { font-size: 40px; }
+    label { font-size: 14px; }
+
+    input[type="text"],
+    input[type="date"],
+    input[type="time"] {
+        font-size: 14px;
+        padding: 8px;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 15px;
+    }
+}
+
+@media only screen and (max-width: 720px) {
+    .ticket-container {
+        padding: 5px;
+    }
+
+    h1 { font-size: 20px; }
+    .ticket-label { font-size: 14px; }
+    .ticket-number { font-size: 14px; }
+    label { font-size: 12px; }
+
+    input[type="text"], input[type="date"], input[type="time"] {
+        font-size: 12px;
+        padding: 6px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 10px;
+    }
+}
+
+
+
+/* html */
+.ticket-container {
+    width: 500px;
+    height: 600px;
+}
+
+.square-button {
+    width: 150px;
+    height: 120px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: 30px; /* Adds rounded corners */
+    font-size: 16px;
+    background-color: white; /* Transparent background */
+    border: 2px solid #007bff; /* Blue border */
+    color: #007bff; /* Blue text */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    box-shadow: 0 0 10px rgb(0, 0, 0);
+
+}
+
+.square-button:hover {
+    background-color: rgb(252, 252, 190); /* Slight blue background on hover */
+    color: #0056b3; /* Darker blue text on hover */
+    border-color: #0056b3; /* Darker blue border on hover */
+    font-weight: bold;
+}
+
+.btn-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column; /* Stack buttons vertically */
+    justify-content: center; /* Center buttons vertically */
+    align-items: center; /* Center buttons horizontally */
+    gap: 20px; /* Adds space between the buttons */
+    height: 80%; /* Takes full height of the container */
+}
+
+.container {
+    height: 100vh; /* Full viewport height */
+}
+/* html */

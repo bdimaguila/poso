@@ -1,0 +1,420 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+.bg {
+    background-image: url("/POSO/images/plaza.jpg");
+    position: fixed;
+    background-size: cover;       /* Ensures the image covers the entire element */
+    background-position: center;  /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    top: 0;                       /* Ensures it starts at the top of the page */
+    left: 0;                      /* Aligns the background to the left */
+    width: 100%;
+    height: 100%;                /* Full viewport height */
+    z-index: -1;                  /* Sends the background image behind other content */
+    opacity: 1;
+    filter: brightness(40%); /* Lower values make it darker */
+}
+
+.navbar {
+    position: fixed;
+    width: 100%;
+    display: flex; /* Use flexbox layout */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin-bottom: 20px; /* Space below the header */
+    background-color: #0000006b;
+    color: white;
+    border-bottom-style: outset;
+    border-color: #ffffff57;
+    border-width: 5px; /* Set the width of the border */
+    z-index: 99;
+}
+
+.public{
+font-size: 25px;
+font-weight: bold;
+margin-top: 25px;
+text-align: center;
+}
+
+.city{
+font-size: 15px;
+margin-top: 10px;
+margin-bottom: 12px;
+text-align: center;
+}
+
+.logo {
+width: 60px; 
+height: auto; 
+margin: 0 100px; /* Space between logo and text */
+}
+
+
+.data{
+color: rgb(0, 0, 0);
+text-align: center;
+font-size: 20px;
+margin-top: 15px;
+letter-spacing: 4px; 
+}
+
+
+/* Initially, the sidebar is hidden */
+.sidebar {
+    width: 200px;
+    background-color: #95d6ff;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: -200px; /* Position the sidebar off-screen initially */
+    transition: left 0.3s ease; /* Smooth transition for sliding effect */
+    box-shadow: 0px 4px 6px rgb(0, 0, 0); 
+
+}
+
+/* sidebar open  */
+/* Sidebar Styling */
+#sidebar {
+    width: 200px;
+    background-color: #95d6ff;
+    height: 100%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: -200px; /* Position the sidebar off-screen initially */
+    transition: left 0.3s ease; /* Smooth transition for sliding effect */
+    box-shadow: 0px 4px 6px rgb(0, 0, 0); 
+    z-index: 1001; /* Above overlay */
+}
+
+/* Show sidebar */
+#sidebar.show {
+    left: 0;
+}
+
+/* Overlay Styling */
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.687); /* Dark transparent overlay */
+    display: none; /* Hidden by default */
+    z-index: 1000; /* Below sidebar */
+}
+
+/* Show overlay when sidebar is open */
+#overlay.show {
+    display: block;
+}
+/* sidebar close */
+
+/* Style for the hamburger icon */
+.hamburger {
+    font-size: 35px;
+    cursor: pointer;
+    z-index: 100;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+.hamburger:hover{
+    color: #95d6ff;
+}
+
+/* To show the sidebar */
+.sidebar.show {
+    left: 0; /* Move the sidebar into view */
+}
+
+
+.sidebar .logo {
+    margin-bottom: 20px;
+    margin-left: 25px;
+    margin-top: 55px;
+}
+
+.sidebar .logo img {
+    width: 150px;
+    height: auto;
+}
+
+
+.sidebar ul {
+    list-style: none;
+    text-align: center;
+}
+
+.sidebar ul li {
+    margin: 20px 0;
+}
+
+.sidebar ul li :hover {
+    background-color: #73b2d9;
+    width: 200px;
+    border-radius: 5px;
+   color: black;
+    font-weight: bold;
+ }
+
+.sidebar ul li a {
+    color: #000000;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.sidebar ul li a.active {
+    background-color: #73b2d9;
+    width: 200px;
+    font-weight: bold;
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+}
+
+.sidebar ul li a i {
+    margin-right: 10px;
+}
+
+
+.main-content {
+    flex-grow: 1;
+}
+
+
+.form {
+    background-color: #ffffff;
+    padding: 20px;
+    width: 550px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* form add new user */
+h2 {
+    margin-bottom: 15px;
+    color: #333;
+}
+
+label {
+    display: block;
+    margin-top: 10px;
+    text-align: left;
+    font-weight: bold;
+    color: #555;
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 10px;
+    background-color: #3f6074;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #2a4858;
+} */
+/* form end */
+
+
+/* SIIX */
+
+.heading{
+    top:10%;
+}
+
+
+.head{
+    background-color: #416d8e !important;
+    color: white !important;
+    text-align: center;
+}
+
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+}
+
+.table {
+    width: 100%; 
+    max-width: 1500px; 
+    table-layout: fixed; 
+    word-wrap: break-word;
+    white-space: nowrap; 
+    border-collapse: collapse; 
+}
+
+.table th, .table td {
+    border: 1px solid #ffffff;
+    padding: 8px;
+    text-align: center;
+    background-color: #FFFEF1 !important;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+}
+
+.table th {
+    background-color: #416f8e !important;
+    color: white !important;
+    text-align: center;
+}
+
+td:nth-child(4) { /* Targets Password Column */
+    max-width: 150px; /* Limits password column width */
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+  .btn{
+    width: 150px !important;
+    border: 1px solid white !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.623); 
+    left: 5%;
+    position: relative;
+}
+
+/* Success button (Add User) */
+.btn-success {
+    background-color: #28a745;
+    color: white;
+    border-color: #28a745;
+    font-size: 14px;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+    border-color: #1e7e34;
+    font-weight: bold;
+}
+
+/* Danger button (Delete User) */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    font-size: 14px;
+    padding: 4px 8px;
+    width: auto !important;
+    min-width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto; 
+    height: 35px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
+    font-weight: bold;
+}
+
+.card {
+    position: fixed;
+    top: 18%;
+    background-color: #FFFEF1;
+    border: 3px solid #575757;
+    width: 650px;
+    min-height: 50vh; /* Minimum height, allowing it to expand */
+    max-height: 70vh; /* Prevents it from exceeding the viewport */
+    padding: 10% !important;
+    overflow-y: auto; /* Enables vertical scrolling */
+    padding-top: 13vh !important; /* Adjust this value as needed */    
+}
+
+  .card::before {
+    content: '- REGISTER -';
+    text-align: center;
+    color: white;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    font-weight: bold;
+    position: absolute;
+    top: 0;  /* Place the blue rectangle at the top of the .card */
+    left: 0;
+    width: 100%;
+    height: 7vh;  /* Set the height of the blue rectangle to 11vh */
+    background-color: #416d8e;  /* Blue color for the rectangle */
+    border-bottom-style: outset;
+    border-color: rgb(255, 255, 255);
+    border-width: 5px;
+    font-size: 20px;
+  }
+
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select {
+    border: 1px solid #075290 !important;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.637); 
+}
+
+/* form */
+ /* Overlay for the form */
+ #formOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.642);
+    display: none;
+    z-index: 1000;
+}
+
+/* Centered Form */
+#userForm {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    display: none;
+    z-index: 1001;
+}
