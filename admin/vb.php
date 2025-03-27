@@ -1,0 +1,322 @@
+<?php
+// Start session
+session_start();
+
+// Include the database connection file
+include 'connection.php'; // Ensure the path is correct
+
+// Get the ticket number from the URL
+$ticket_number = isset($_GET['ticket_number']) ? $_GET['ticket_number'] : '';
+
+// Fetch the violation record for the given ticket number
+$sql = "SELECT 'First Violation' AS violation_type, first_violation, first_total, notes FROM violation WHERE ticket_number = ?
+    UNION ALL
+    SELECT 'Second Violation' AS violation_type, second_violation, second_total, notes FROM 2_violation WHERE ticket_number = ?
+    UNION ALL
+    SELECT 'Third Violation' AS violation_type, third_violation, third_total, notes FROM 3_violation WHERE ticket_number = ?
+    ORDER BY violation_type ASC"; // Order the results by violation type
+
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(1, $ticket_number, PDO::PARAM_INT);
+$stmt->bindParam(2, $ticket_number, PDO::PARAM_INT);
+$stmt->bindParam(3, $ticket_number, PDO::PARAM_INT);
+$stmt->execute();
+$result = $stmt->fetchAll(PDO::FETCH_ASSOC); // Fetch all rows as an associative array
+
+// Fetch officer information (combine lastname and firstname from hh_login table)
+$sql_officer = "SELECT CONCAT(lastname, ', ', firstname) AS officer_name FROM hh_login LIMIT 1";
+$stmt_officer = $conn->prepare($sql_officer);
+$stmt_officer->execute();
+$officer_result = $stmt_officer->fetchAll(PDO::FETCH_ASSOC);
+$officer = $officer_result[0];
+$officer_name = $officer['officer_name'];
+
+// Fetch violator's information (name, license number, plate number, street, city/municipality from report table)
+$sql_violator = "SELECT CONCAT(last_name, ', ', first_name) AS violator_name, license, plate_number, street, city FROM report WHERE ticket_number = ?";
+$stmt_violator = $conn->prepare($sql_violator);
+$stmt_violator->bindParam(1, $ticket_number, PDO::PARAM_INT);
+$stmt_violator->execute();
+$violator_result = $stmt_violator->fetchAll(PDO::FETCH_ASSOC);
+$violator = $violator_result[0];
+$violator_name = $violator['violator_name'];
+$license_number = $violator['license'];
+$plate_number = $violator['plate_number'];
+$street = $violator['street'];
+$city = $violator['city'];
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>POSO Violation Receipt</title>
+  <link rel="stylesheet" href="./css/style1.css?v=1.0">
+  <link rel="icon" href="/POSO/images/poso.png" type="image/png">
+  <style>
+    .impound-warning {
+      color: red;
+      text-align: center;
+      font-weight: bold;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+    .compliance-message {
+      text-align: center;
+      font-weight: regular;
+      margin-top: 20px;
+      font-size: 1.2em;
+}
+    .button-container {
+      text-align: center;
+      margin-top: 20px;
+    }
+    button {
+      width: 120px;    /* Set a specific width */
+      height: 35px;    /* Set a specific height */
+      padding: 0;        /* Remove padding */
+      font-size: 14px;    /* Smaller font size */
+      margin: 5px;        /* Reduced margin */
+      display: inline-block;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background-color: #f0f0f0;
+    }
+@media print {
+      * {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+
+      .button-container {
+        display: none; /* Hide buttons during printing */
+      }
+
+      .container {
+        width: 100%; /* Expand to full width for print */
+      }
+
+      .ticket-container {
+        margin: 0;
+        border: none; /* Adjust for clean edges in print */
+      }
+    }    </style>
+</head>
+<body>
+  <div class="container">
+    <?php if (count($result) > 0) : ?>
+      <div class="ticket-container">
+        <div class="header-container d-flex justify-content-between align-items-center">
+          <img src="/POSO/images/left.png" alt="Left Logo" class="logo">
+          <div class="col text-center">
+            <p class="title">Traffic Violations</p>
+            <p class="city">-City of Binan, Laguna-</p>
+          </div>
+          <img src="/POSO/images/arman.png" alt="Right Logo" class="logo">
+        </div>
+
+        <div class="ticket-info">
+          <p class="ticket-label">Ordinance Infraction Ticket</p>
+          <p class="ticket-number">No. <?php echo htmlspecialchars($ticket_number); ?></p>
+        </div>
+<div class="gray">
+  <h3>Officer Information</h3>
+</div>
+<p>Name: <?php echo htmlspecialchars($officer_name); ?></p>
+<p>Street: <?php echo htmlspecialchars($street); ?></p>
+<p>City/Municipality: <?php echo htmlspecialchars($city); ?></p>
+
+        <div class="gray">
+          <h3>Violator Information</h3>
+        </div>
+        <p>Name: <?php echo htmlspecialchars($violator_name); ?></p>
+        <p>License Number: <?php echo htmlspecialchars($license_number); ?></p>
+        <p>Plate Number: <?php echo htmlspecialchars($plate_number); ?></p>
+        
+        <div class="gray">
+          <h3>BREAKDOWN OF VIOLATION CHARGES</h3>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>VIOLATION NUMBER</th>
+              <th>VIOLATION</th>
+              <th>AMOUNT</th>
+            </tr>
+          </thead>
+          <tbody>
+    <?php
+    $impoundFound = false;
+    $violation_columns = [
+      'FTWH' => 'FAILURE TO WEAR HELMET',
+      'OMN' => 'OPEN MUFFLER/NUISANCE',
+      'ARG' => 'ARROGANT',
+      'ONEWAY' => 'ONEWAY',
+      'ILP' => 'ILLEGAL PARKING',
+      'DWL' => 'DRIVING WITHOUT LICENSE/INVALID LICENSE',
+      'NORCR' => 'NO OR/CR WHILE DRIVING',
+      'DUV' => 'DRIVING UNREGISTERED VEHICLE',
+      'UMV' => 'UNREGISTERED MOTOR VEHICLE',
+      'OBS' => 'OBSTRUCTION',
+      'DTS' => 'DISREGARDING TRAFFIC SIGNS',
+      'DTO' => 'DISREGARDING TRAFFIC OFFICER',
+      'TRB' => 'TRUCK BAN',
+      'STV' => 'STALLED VEHICLE',
+      'RCD' => 'RECKLESS DRIVING',
+      'DUL' => 'DRIVING UNDER THE INFLUENCE OF LIQUOR',
+      'INF' => 'INVALID OR NO FRANCHISE/COLORUM',
+      'OOL' => 'OPERATING OUT OF LINE',
+      'TCT' => 'TRIP - CUTTING',
+      'OVL' => 'OVERLOADING',
+      'LUZ' => 'LOADING/UNLOADING IN PROHIBITED ZONE',
+      'IVA' => 'INVOLVE IN ACCIDENT',
+      'SMB' => 'SMOKE BELCHING',
+      'NSM' => 'NO SIDE MIRROR',
+      'JWK' => 'JAY WALKING',
+      'WSS' => 'WEARING SLIPPERS/SHORTS/SANDO',
+      'ILV' => 'ILLEGAL VENDING',
+      'IMP' => 'IMPOUNDED'
+    ];
+
+    foreach ($result as $violation) {
+      $violation_details = htmlspecialchars($violation['first_violation'] ?? $violation['second_violation'] ?? $violation['third_violation']);
+      $violation_amount = htmlspecialchars($violation['first_total'] ?? $violation['second_total'] ?? $violation['third_total']);
+      $formatted_violation_details = str_replace(", ", "<br>", $violation_details);
+
+      if (stripos($violation_details, 'IMPOUNDED') !== false) {
+        $impoundFound = true;
+      }
+
+      if ($violation_amount >= 1) {
+        $sql_discount = "SELECT * FROM discount WHERE ticket_number = ? AND license = ?";
+        $stmt_discount = $conn->prepare($sql_discount);
+        $stmt_discount->bindParam(1, $ticket_number, PDO::PARAM_INT);
+        $stmt_discount->bindParam(2, $license_number, PDO::PARAM_STR);
+        $stmt_discount->execute();
+        $discount_result = $stmt_discount->fetchAll(PDO::FETCH_ASSOC);
+        $discount = $discount_result[0];
+        // Removed close method here.
+
+        if ($discount) {
+          $discount_applied = false;
+          foreach ($violation_columns as $col => $violation_name) {
+            if ($discount[$col] !== null) {
+              echo "<tr>
+                            <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                            <td>" . htmlspecialchars($violation_name) . "</td>
+                            <td>" . htmlspecialchars($discount[$col]) . "</td>
+                        </tr>";
+              $discount_applied = true;
+            }
+          }
+          if (!$discount_applied) {
+            echo "<tr>
+                        <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                        <td>" . $formatted_violation_details . "</td>
+                        <td>" . $violation_amount . "</td>
+                    </tr>";
+          }
+          //check if OTHERS and OTHERS_P has value.
+          if ($discount['OTHERS'] !== null && $discount['OTHERS_P'] !== null) {
+            echo "<tr>
+                        <td>OTHERS</td>
+                        <td>" . htmlspecialchars($discount['OTHERS']) . "</td>
+                        <td>" . htmlspecialchars($discount['OTHERS_P']) . "</td>
+                    </tr>";
+          }
+        } else {
+          echo "<tr>
+                      <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                      <td>" . $formatted_violation_details . "</td>
+                      <td>" . $violation_amount . "</td>
+                  </tr>";
+        }
+      }
+    }
+
+    if ($impoundFound) {
+      echo "<tr><td colspan='3' class='impound-warning'>THIS VIOLATOR IS SUBJECT FOR VEHICLE IMPOUND.</td></tr>";
+    }
+
+    if (count($result) == 0) {
+      echo "<tr><td colspan='3'>No violations found.</td></tr>";
+    }
+    ?>
+</tbody>
+        </table>
+<br>
+<h4>NOTES:</h4>
+<ul>
+<?php
+// Reset the result pointer to fetch notes
+// Resetting result is not applicable in PDO.
+foreach ($result as $violation) {
+echo "<li>" . htmlspecialchars($violation['notes']) . "</li>";
+}
+?>
+</ul>
+<p class="compliance-message">PLEASE PROCEED TO OFFICE OF THE CITY TREASURER. THANK YOU FOR YOUR COMPLIANCE.</p>
+
+       <div class="button-container">
+    <button id="printButton" onclick="printReceipt()">Print</button>
+    <button id="previousButton" class="btn btn-secondary" onclick="goToPreviousPage()">Back</button>
+</div>
+      </div>
+    <?php else : ?>
+      <p>No violation records found for this individual.</p>
+    <?php endif; ?>
+</div>
+
+<script>
+function printReceipt() {
+try {
+document.querySelector('.button-container').style.display = 'none';
+
+        if (typeof InnerPrinter !== "undefined" && InnerPrinter.print) {
+          const receiptContent = document.querySelector('.container').innerHTML;
+
+          const formattedContent = `
+            <html>
+              <head>
+                <title>Receipt</title>
+              </head>
+              <body>
+                ${receiptContent}
+              </body>
+            </html>
+          `;
+
+          InnerPrinter.print(formattedContent, function (success) {
+            if (success) {
+              alert("Printed successfully!");
+            } else {
+              alert("Failed to print. Please try again.");
+            }
+          });
+        } else {
+          window.print();
+        }
+} catch (error) {
+        console.error("Printing error: ", error);
+        alert("Printing failed. Check your printer connection.");
+} finally {
+        document.querySelector('.button-container').style.display = 'block';
+}
+}
+
+function goToPreviousPage() {
+  window.history.back();
+}
+</script>
+</body>
+</html>
+<?php

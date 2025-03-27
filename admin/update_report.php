@@ -1,4 +1,5 @@
 <?php
+
 // Start session
 session_start();
 
@@ -13,6 +14,22 @@ include 'connection.php';
 
 // Get the ticket number from the URL or POST data
 $ticket_number = isset($_GET['ticket_number']) ? $_GET['ticket_number'] : (isset($_POST['ticket_number']) ? $_POST['ticket_number'] : '');
+
+// Check if the ticket_number exists in the database
+if (empty($ticket_number)) {
+    echo "Ticket number is missing!";
+    exit();
+}
+
+$stmt_check = $conn->prepare("SELECT COUNT(*) FROM report WHERE ticket_number = :ticket_number");
+$stmt_check->bindParam(':ticket_number', $ticket_number);
+$stmt_check->execute();
+$result = $stmt_check->fetchColumn();
+
+if ($result == 0) {
+    echo "Ticket number does not exist!";
+    exit();
+}
 
 // Collect form data
 $first_name = isset($_POST['first_name']) ? $_POST['first_name'] : '';
@@ -33,22 +50,6 @@ $registration = isset($_POST['registration']) ? $_POST['registration'] : '';
 $status = isset($_POST['status']) ? $_POST['status'] : '';
 $amount = isset($_POST['amount']) ? $_POST['amount'] : '';
 $officer_name = isset($_POST['officer_name']) ? $_POST['officer_name'] : '';
-
-// Check if the ticket_number exists in the database
-if (empty($ticket_number)) {
-    echo "Ticket number is missing!";
-    exit();
-}
-
-$stmt_check = $conn->prepare("SELECT COUNT(*) FROM report WHERE ticket_number = :ticket_number");
-$stmt_check->bindParam(':ticket_number', $ticket_number);
-$stmt_check->execute();
-$result = $stmt_check->fetchColumn();
-
-if ($result == 0) {
-    echo "Ticket number does not exist!";
-    exit();
-}
 
 // Prepare the update query
 $stmt = $conn->prepare("UPDATE report SET 
@@ -88,11 +89,75 @@ $stmt->bindParam(':ticket_number', $ticket_number);
 
 try {
     $stmt->execute();
-    echo "Update successful!";
-    header("Location: report.php");
-    exit();
 } catch (PDOException $e) {
     echo "Error: " . $e->getMessage();
     exit();
 }
+
+// Fetch existing violations
+$stmt_violation = $conn->prepare("SELECT * FROM discount WHERE ticket_number = :ticket_number");
+$stmt_violation->bindParam(':ticket_number', $ticket_number);
+$stmt_violation->execute();
+$existing_violations = $stmt_violation->fetch(PDO::FETCH_ASSOC);
+
+// Get violations from POST request
+$new_violations = isset($_POST['violations']) ? $_POST['violations'] : [];
+
+// Define available violations with respective column names and penalties
+$violation_map =  [
+    'FAILURE TO WEAR HELMET' => ['column' => 'FTWH', 'penalty' => 200],
+    'OPEN MUFFLER/NUISANCE' => ['column' => 'OMN', 'penalty' => 1000],
+    'ARROGANT' => ['column' => 'ARG', 'penalty' => 1000],
+    'ONEWAY' => ['column' => 'ONEWAY', 'penalty' => 200],
+    'ILLEGAL PARKING' => ['column' => 'ILP', 'penalty' => 200],
+    'DRIVING WITHOUT LICENSE/INVALID LICENSE' => ['column' => 'DWL', 'penalty' => 1000],
+    'NO OR/CR WHILE DRIVING' => ['column' => 'NORCR', 'penalty' => 500],
+    'DRIVING UNREGISTERED VEHICLE' => ['column' => 'DUV', 'penalty' => 500],
+    'UNREGISTERED MOTOR VEHICLE' => ['column' => 'UMV', 'penalty' => 500],
+    'OBSTRUCTION' => ['column' => 'OBS', 'penalty' => 200],
+    'DISREGARDING TRAFFIC SIGNS' => ['column' => 'DTS', 'penalty' => 200],
+    'DISREGARDING TRAFFIC OFFICER' => ['column' => 'DTO', 'penalty' => 200],
+    'TRUCK BAN' => ['column' => 'TRB', 'penalty' => 200],
+    'STALLED VEHICLE' => ['column' => 'STV', 'penalty' => 200],
+    'RECKLESS DRIVING' => ['column' => 'RCD', 'penalty' => 100],
+    'DRIVING UNDER THE INFLUENCE OF LIQUOR' => ['column' => 'DUL', 'penalty' => 200],
+    'INVALID OR NO FRANCHISE/COLORUM' => ['column' => 'INF', 'penalty' => 2000],
+    'OPERATING OUT OF LINE' => ['column' => 'OOL', 'penalty' => 2000],
+    'TRIP - CUTTING' => ['column' => 'TCT', 'penalty' => 200],
+    'OVERLOADING' => ['column' => 'OVL', 'penalty' => 200],
+    'LOADING/UNLOADING IN PROHIBITED ZONE' => ['column' => 'LUZ', 'penalty' => 200],
+    'INVOLVE IN ACCIDENT' => ['column' => 'IVA', 'penalty' => 200],
+    'SMOKE BELCHING' => ['column' => 'SMB', 'penalty' => 500],
+    'NO SIDE MIRROR' => ['column' => 'NSM', 'penalty' => 200],
+    'JAY WALKING' => ['column' => 'JWK', 'penalty' => 200],
+    'WEARING SLIPPERS/SHORTS/SANDO' => ['column' => 'WSS', 'penalty' => 300],
+    'ILLEGAL VENDING' => ['column' => 'ILV', 'penalty' => 200],
+    'IMPOUNDED' => ['column' => 'IMP', 'penalty' => 800]
+];
+
+// Prepare the update query for discount table
+$update_fields = [];
+$params = [':ticket_number' => $ticket_number];
+
+foreach ($violation_map as $violation => $data) {
+    $column = $data['column'];
+    $penalty = $data['penalty'];
+
+    if (in_array($violation, $new_violations)) {
+        $update_fields[] = "$column = :$column";
+        $params[":$column"] = $penalty;
+    } else {
+        $update_fields[] = "$column = NULL";
+    }
+}
+
+if (!empty($update_fields)) {
+    $sql_update_discount = "UPDATE discount SET " . implode(", ", $update_fields) . " WHERE ticket_number = :ticket_number";
+    $stmt_update = $conn->prepare($sql_update_discount);
+    $stmt_update->execute($params);
+}
+
+// Redirect after update
+header("Location: report.php");
+exit();
 ?>

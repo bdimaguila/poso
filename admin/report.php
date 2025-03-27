@@ -40,13 +40,13 @@ $start = ($page - 1) * $limit; // Calculate the starting row
 
 // Prepare the base query with a WHERE clause for search term
 $sql = "
-    SELECT 
+    SELECT  
         r.ticket_number,
         r.violation_date,
         r.first_name,
         r.last_name,
         COALESCE(v.STATUS, v2.STATUS, v3.STATUS) AS payment_status,
-        CASE 
+        CASE  
             WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
             WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
             WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
@@ -60,15 +60,15 @@ $sql = "
             IFNULL(v3.third_violation, ''),
             IFNULL(v3.others_violation, '')
         ) AS violations
-    FROM 
+    FROM  
         report AS r
-    LEFT JOIN 
+    LEFT JOIN  
         violation AS v ON r.ticket_number = v.ticket_number
-    LEFT JOIN 
+    LEFT JOIN  
         2_violation AS v2 ON r.ticket_number = v2.ticket_number
-    LEFT JOIN 
+    LEFT JOIN  
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
-    WHERE 
+    WHERE  
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
         OR r.last_name LIKE :searchTerm)
@@ -76,8 +76,8 @@ $sql = "
 
 // Add a filter condition if a specific violation level is selected
 if ($filter) {
-    $sql .= " AND 
-        CASE 
+    $sql .= " AND  
+        CASE  
             WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
             WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
             WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
@@ -105,15 +105,15 @@ $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get total number of records to calculate total pages
 $totalStmt = $conn->prepare("
-    SELECT COUNT(*) 
+    SELECT COUNT(*)  
     FROM report AS r
-    LEFT JOIN 
+    LEFT JOIN  
         violation AS v ON r.ticket_number = v.ticket_number
-    LEFT JOIN 
+    LEFT JOIN  
         2_violation AS v2 ON r.ticket_number = v2.ticket_number
-    LEFT JOIN 
+    LEFT JOIN  
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
-    WHERE 
+    WHERE  
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
         OR r.last_name LIKE :searchTerm)
@@ -142,6 +142,48 @@ $sortBy = isset($_GET['sort']) ? $_GET['sort'] : 'ticket_number';
 $sortOrder = isset($_GET['order']) ? $_GET['order'] : 'asc';
 
 $reports = sortReports($reports, $sortBy, $sortOrder);
+
+// Function to get violations from discount table
+function getDiscountViolations($conn, $ticketNumber) {
+    $stmt = $conn->prepare("SELECT * FROM discount WHERE ticket_number = :ticket_number");
+    $stmt->bindParam(':ticket_number', $ticketNumber);
+    $stmt->execute();
+    $discount = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $violations = [];
+    if ($discount) {
+        if ($discount['FTWH'] != null) $violations[] = 'FAILURE TO WEAR HELMET';
+        if ($discount['OMN'] != null) $violations[] = 'OPEN MUFFLER/NUISANCE';
+        if ($discount['ARG'] != null) $violations[] = 'ARROGANT';
+        if ($discount['ONEWAY'] != null) $violations[] = 'ONEWAY';
+        if ($discount['ILP'] != null) $violations[] = 'ILLEGAL PARKING';
+        if ($discount['DWL'] != null) $violations[] = 'DRIVING WITHOUT LICENSE/INVALID LICENSE';
+        if ($discount['NORCR'] != null) $violations[] = 'NO OR/CR WHILE DRIVING';
+        if ($discount['DUV'] != null) $violations[] = 'DRIVING UNREGISTERED VEHICLE';
+        if ($discount['UMV'] != null) $violations[] = 'UNREGISTERED MOTOR VEHICLE';
+        if ($discount['OBS'] != null) $violations[] = 'OBSTRUCTION';
+        if ($discount['DTS'] != null) $violations[] = 'DISREGARDING TRAFFIC SIGNS';
+        if ($discount['DTO'] != null) $violations[] = 'DISREGARDING TRAFFIC OFFICER';
+        if ($discount['TRB'] != null) $violations[] = 'TRUCK BAN';
+        if ($discount['STV'] != null) $violations[] = 'STALLED VEHICLE';
+        if ($discount['RCD'] != null) $violations[] = 'RECKLESS DRIVING';
+        if ($discount['DUL'] != null) $violations[] = 'DRIVING UNDER THE INFLUENCE OF LIQUOR';
+        if ($discount['INF'] != null) $violations[] = 'INVALID OR NO FRANCHISE/COLORUM';
+        if ($discount['OOL'] != null) $violations[] = 'OPERATING OUT OF LINE';
+        if ($discount['TCT'] != null) $violations[] = 'TRIP - CUTTING';
+        if ($discount['OVL'] != null) $violations[] = 'OVERLOADING';
+        if ($discount['LUZ'] != null) $violations[] = 'LOADING/UNLOADING IN PROHIBITED ZONE';
+        if ($discount['IVA'] != null) $violations[] = 'INVOLVE IN ACCIDENT';
+        if ($discount['SMB'] != null) $violations[] = 'SMOKE BELCHING';
+        if ($discount['NSM'] != null) $violations[] = 'NO SIDE MIRROR';
+        if ($discount['JWK'] != null) $violations[] = 'JAY WALKING';
+        if ($discount['WSS'] != null) $violations[] = 'WEARING SLIPPERS/SHORTS/SANDO';
+        if ($discount['ILV'] != null) $violations[] = 'ILLEGAL VENDING';
+        if ($discount['IMP'] != null) $violations[] = 'IMPOUNDED';
+        if ($discount['OTHERS'] != null) $violations[] = $discount['OTHERS']; // Include OTHERS violation
+    }
+    return implode(', ', $violations);
+}
 ?>
 
 <!DOCTYPE html>
@@ -228,7 +270,7 @@ $reports = sortReports($reports, $sortBy, $sortOrder);
                         <td><?php echo htmlspecialchars($report['ticket_number']); ?></td>
                         <td><?php echo htmlspecialchars($report['first_name']) . ' ' . htmlspecialchars($report['last_name']); ?></td>
                         <td><?php echo htmlspecialchars($report['violation_level']); ?></td>
-                        <td><?php echo htmlspecialchars($report['violations']); ?></td>
+                        <td><?php echo htmlspecialchars(getDiscountViolations($conn, $report['ticket_number'])); ?></td>
                         <td><?php echo htmlspecialchars($report['violation_date']); ?></td>
                         <td><?php echo htmlspecialchars($report['payment_status']); ?></td>
                         <td>
