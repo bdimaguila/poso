@@ -34,7 +34,7 @@ body {
     background-color: #0000006b;
     color: white;
     border-bottom-style: outset;
-    border-color: #ffffff57;
+    border-color: #95d6ff9f;
     border-width: 5px; /* Set the width of the border */
     z-index: 99;
 }
@@ -293,7 +293,7 @@ button:hover {
 }
 
 .table th {
-    background-color: #416f8e !important;
+    background: linear-gradient(to bottom, #416f8e, #2b4d66);
     color: white !important;
     text-align: center;
 }
@@ -363,7 +363,7 @@ td:nth-child(4) { /* Targets Password Column */
 }
 
   .card::before {
-    content: '- REGISTER -';
+    content: '- R E G I S T E R -';
     text-align: center;
     color: white;
     display: flex;
@@ -375,7 +375,7 @@ td:nth-child(4) { /* Targets Password Column */
     left: 0;
     width: 100%;
     height: 7vh;  /* Set the height of the blue rectangle to 11vh */
-    background-color: #416d8e;  /* Blue color for the rectangle */
+    background: linear-gradient(to bottom, #416f8e, #2b4d66);
     border-bottom-style: outset;
     border-color: rgb(255, 255, 255);
     border-width: 5px;

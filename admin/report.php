@@ -193,11 +193,15 @@ function getDiscountViolations($conn, $ticketNumber) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports</title>
-    <link rel="stylesheet" href="/poso/admin/css/report1.css">
+    <link rel="stylesheet" href="/poso/admin/css/report.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 </head>
 
 <body>
+<img class="bg" src="/POSO/images/reports1.jpg" alt="Background Image">
+
     <div id="overlay"></div>
 
     <div class="main-content">
@@ -227,6 +231,7 @@ function getDiscountViolations($conn, $ticketNumber) {
             </ul>
         </div>
 
+        
         <div class="search-filter">
             <form action="report.php" method="get">
                 <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($searchTerm); ?>">
@@ -240,25 +245,27 @@ function getDiscountViolations($conn, $ticketNumber) {
             </form>
         </div>
 
-        <table class="table mt-5">
+        <table class="table">
             <thead>
                 <tr>
                     <th>
-                        <a href="?sort=ticket_number&order=<?php echo ($sortBy == 'ticket_number' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                            Ticket No.
-                        </a>
+                    <a class="link" href="?sort=ticket_number&order=<?php echo ($sortBy == 'ticket_number' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
+                    Ticket No. <i class="fa <?php echo ($sortBy == 'ticket_number' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                    </a>
+
                     </th>
                     <th>Name</th>
                     <th>
-                        <a href="?sort=violation_level&order=<?php echo ($sortBy == 'violation_level' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                            Violation Level
-                        </a>
+                    <a class="link" href="?sort=violation_level&order=<?php echo ($sortBy == 'violation_level' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
+                    Violation Level <i class="fa <?php echo ($sortBy == 'violation_level' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                    </a>
+
                     </th>
                     <th>Violation/s</th>
                     <th>
-                        <a href="?sort=violation_date&order=<?php echo ($sortBy == 'violation_date' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                            Violation Date
-                        </a>
+                    <a class="link" href="?sort=violation_date&order=<?php echo ($sortBy == 'violation_date' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
+                    Violation Date <i class="fa <?php echo ($sortBy == 'violation_date' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                   </a>
                     </th>
                     <th>Status</th>
                     <th>Action</th>

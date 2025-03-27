@@ -192,7 +192,7 @@ if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSu
         <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"> </script>
-        <link rel="stylesheet" href="/poso/admin/css/sm1.css">
+        <link rel="stylesheet" href="/poso/admin/css/sm.css">
     </head>
     <body>
     <div id="overlay"></div>
@@ -211,15 +211,16 @@ if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSu
         <?php
             $current_page = basename($_SERVER['PHP_SELF']); // Get the current file name
         ?>
+
         <div class="sidebar" id="sidebar">
             <div class="logo">
                 <img src="/POSO/images/right.png" alt="POSO Logo">
             </div>
             <ul>
-                <li><a href="dashboard.php" class="<?= $current_page == 'dashboard.php' ? 'active' : '' ?>"><i class="fas fa-home"></i> Home</a></li>
-                <li><a href="profile.php" class="<?= $current_page == 'profile.php' ? 'active' : '' ?>"><i class="fas fa-user"></i> Profile</a></li>
-                <li><a href="report.php" class="<?= $current_page == 'report.php' ? 'active' : '' ?>"><i class="fas fa-file-alt"></i> Reports</a></li>
-                <li><a href="settings.php" class="<?= $current_page == 'settings.php' ? 'active' : '' ?>"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="dashboard.php" > <i class="fas fa-home"></i> Home</a></li>
+                <li><a href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="report.php" class="active"><i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
@@ -350,14 +351,14 @@ if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSu
                             <option value="UNREGISTERED MOTOR VEHICLE" data-price="500" <?= in_array('UNREGISTERED MOTOR VEHICLE', $selectedViolations) ? 'selected' : '' ?>>UNREGISTERED MOTOR VEHICLE</option>
                             <option value="INVALID OR NO FRANCHISE/COLORUM" data-price="2000" <?= in_array('INVALID OR NO FRANCHISE/COLORUM', $selectedViolations) ? 'selected' : '' ?>>INVALID OR NO FRANCHISE/COLORUM</option>
                             <option value="WEARING SLIPPERS/SHORTS/SANDO" data-price="300" <?= in_array('WEARING SLIPPERS/SHORTS/SANDO', $selectedViolations) ? 'selected' : '' ?>>WEARING SLIPPERS/SHORTS/SANDO</option>
-                                                        </select>
+                            </select>
+                            <br><br>
                         
-                    <div class="info-container">
+                    <div class="info-container ">
                         <div><strong>Subtotal:</strong></div>
                         <div><input type="number" name="subtotal" id="subtotal" value="<?= $discountSubtotal ?>" step="0.01" readonly></div>
                     </div>
 
-                    <br>
                     <?php if (!empty($othersViolationText)): ?>
                         <div class="info-container"><div>
                                 <strong>Others Violation:</strong>
@@ -412,14 +413,12 @@ if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSu
                 </div>
             </div>
             <div style="text-align: center;">
-                <button type="submit" style="float: left; margin-left:10px;">Update</button>
-                <a href="vb.php?ticket_number=<?= htmlspecialchars($report['ticket_number']) ?>" style="float: right; margin-right: 10px; background-color: #4CAF50; /* Green */ border: none; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer;">See Breakdown of Violations</a>
-                <br><br><br>
-            </div>
+    <button type="submit" class="update-btn">Update</button>
+    <a href="vb.php?ticket_number=<?= htmlspecialchars($report['ticket_number']) ?>" class="see">See Breakdown of Violations</a>
+</div>
+
         </form>
     </div>
-
-    <div class="spacer"></div>
 
 
     <script>

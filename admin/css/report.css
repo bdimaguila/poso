@@ -9,8 +9,12 @@ body {
     display: flex;
 }
 
-.bg {
-    background-image: url("/POSO/images/db1.jpg");
+.link{
+    color: rgb(255, 255, 136)   ;
+}
+
+.bg{
+    background-image: url("/POSO/images/reports1.jpg");
     position: fixed;
     background-size: cover;       /* Ensures the image covers the entire element */
     background-position: center;  /* Centers the image */
@@ -21,105 +25,50 @@ body {
     height: 100%;                /* Full viewport height */
     z-index: -1;                  /* Sends the background image behind other content */
     opacity: 1;
-    filter: brightness(40%); /* Lower values make it darker */
+    filter: brightness(50%) saturate(50%);
 
-}
-
-  
-/* htmlstyle */
-.data-analytics-container {
-    width: 100%;
-    padding: 20px;
-    background-color: #f4f4f400;
-    margin-top: 20px;
-}
-
-.analytics-container {
-    display: flex;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    margin-top: 20px;
-    background-color: #f4f4f400;
-}
-
-.container {
-    text-align: center;
-    background-color: rgb(207, 247, 247);
-    padding: 20px;
-    border: 5px solid rgba(31, 26, 26, 0.669);
-    border-radius: 8px;
-    box-shadow: 0 8px 10px rgb(0, 0, 0);
-    margin: 10px;
-    width: 280px;
-}
-
-h2 {
-    font-size: 10px;
-    margin-bottom: 15px;
-    margin-top: 15px;
-    color: #333;
-}
-
-        .analytics-container {
-            display: flex;
-            justify-content: space-evenly;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        .chart-container {
-            width: 250px;
-            height: 250px;
-            margin: 20px;
-        }
-
-        .container {
-            text-align: center;
-        }
-
-        h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-/* htmlstyle */
-
-    .navbar {
-        display: flex; /* Use flexbox layout */
-        align-items: center; /* Center items vertically */
-        justify-content: center; /* Center items horizontally */
-        margin-bottom: 20px; /* Space below the header */
-        background-color: #000000;
-        color: white;
-        border-bottom-style: outset;
-        border-color: #95d6ff;
-        border-width: 5px; /* Set the width of the border */
     }
 
+.navbar {
+    position: fixed;
+    width: 100%;
+    display: flex; /* Use flexbox layout */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin-bottom: 20px; /* Space below the header */
+    background-color: #00000093;
+    color: white;
+    border-bottom-style: outset;
+    border-color: #95d6ff;
+    border-width: 5px; /* Set the width of the border */
+    z-index: 99;
+}
+
 .public{
-  font-size: 25px;
-  font-weight: bold;
-  margin-top: 25px;
+font-size: 25px;
+font-weight: bold;
+margin-top: 25px;
 }
 
 .city{
-  font-size: 15px;
-  margin-top: 10px;
-  margin-bottom: 12px;
+font-size: 15px;
+margin-top: 10px;
+margin-bottom: 12px;
 }
 
 .logo {
-    width: 60px; 
-    height: auto; 
-    margin: 0 100px; /* Space between logo and text */
+width: 60px; 
+height: auto; 
+margin: 0 100px; /* Space between logo and text */
 }
 
 
 .data{
-    color: rgb(0, 0, 0);
-    text-align: center;
-    font-size: 20px;
-    margin-top: 15px;
-    letter-spacing: 4px; 
+color: rgb(0, 0, 0);
+text-align: center;
+font-size: 20px;
+margin-top: 15px;
+letter-spacing: 4px; 
 }
 
 /* Initially, the sidebar is hidden */
@@ -136,7 +85,6 @@ h2 {
     left: -200px; /* Position the sidebar off-screen initially */
     transition: left 0.3s ease; /* Smooth transition for sliding effect */
     box-shadow: 0px 4px 6px rgb(0, 0, 0); 
-
 }
 
 /* sidebar open  */
@@ -213,6 +161,7 @@ h2 {
 
 .sidebar ul {
     list-style: none;
+    text-align: center;
 }
 
 .sidebar ul li {
@@ -251,9 +200,36 @@ h2 {
     flex-grow: 1;
 }
 
+
+.table {
+    border: 2px solid rgb(100, 100, 100);
+    padding: 20px;
+    text-align: center;
+    border-collapse: collapse;
+    margin: 20px auto; /* Adds space around the table and centers it */
+    width: 90%; /* Adjusts width for better spacing */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
+    background-color: white;
+
+    margin-top: 90px;
+}
+
+
 header {
     text-align: center;
     margin-bottom: 20px;
+}
+
+header img {
+    height: 150px;
+    vertical-align: middle;
+}
+
+header h1 {
+    display: inline-block;
+    font-size: 24px;
+    margin-left: 10px;
+    vertical-align: middle;
 }
 
 .welcome-box {
@@ -300,40 +276,36 @@ header {
     font-size: 36px;
 }
 
-/* Table container styling */
-.report-container {
-    margin: 20px auto;
-    width: 95%;
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-}
 
 /* Search and filter styling */
 .search-filter {
     display: flex;
     align-items: center ;
     margin-bottom: 20px;
+    margin-left: 60px;
+    margin-top: 150px;
 }
 
 .search-filter input[type="text"] {
     width: 100% auto;
     padding: 10px;
     font-size: 16px;
-    border: 1px solid #ccc;
+    border: 1px solid #ccc !important;
     border-radius: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
+
 }
 
 .search-filter button {
     background-color: #2161EC;
     color: white;
-    border: none;
+    border: 1px solid rgb(255, 255, 255) !important;
     padding: 10px 15px;
     font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
     margin-left: 5px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
 }
 
 .search-filter button:hover {
@@ -345,10 +317,12 @@ table {
     width: 100% ;
     border-collapse: collapse;
     font-size: 16px;
+    margin-top: 50px !important;
 }
 
 thead th {
-    background-color: #2161EC;
+    background: linear-gradient(to bottom, #416f8e, #2b4d66);
+    border: 1px solid rgb(255, 255, 255);
     color: #fff;
     padding: 15px;
     text-align: center;
@@ -386,7 +360,7 @@ td a:hover {
 
 /* Hover effect on table rows */
 tbody tr:hover {
-    background-color: #f1f5ff;
+    background-color: #cfd0da;
 }
 
 /* Tooltip styling */
@@ -435,7 +409,6 @@ tbody tr:hover {
     padding: 20px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
 }
-
 
 .title {
     display: flex;
@@ -496,3 +469,114 @@ tbody tr:hover {
 .back:hover {
     background-color: #0056b3;
 }
+
+
+/* html  */
+ 
+ /* Sidebar and main layout styling (existing) */
+        /* Pagination container */
+        .pagination {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        /* Pagination buttons */
+        .pagination-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #007bff;  /* Blue background */
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 2px solid rgb(100, 100, 100);
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
+
+        }
+
+        /* Add hover effect */
+        .pagination-btn:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slight zoom effect */
+            color: white;
+        }
+
+        /* Styling for the Previous and Next buttons */
+        .pagination-btn.previous {
+            background-color: #28a745;  /* Green background for Previous */
+        } 
+
+        .pagination-btn.next {
+            background-color: #dc3545;  /* Red background for Next */
+        }
+
+        /* Active state when hovering over or clicking */
+        .pagination-btn:active {
+            transform: scale(1); /* Remove zoom effect on click */
+        }
+
+        /* Styling for the filter dropdown and buttons */
+        .search-filter form {
+            display: inline-block;
+            margin-right: 20px;
+        }
+
+        .search-filter select,
+        .search-filter input[type="text"] {
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ffffff;  /* Blue border */
+            margin-right: 10px;
+            outline: none;
+            width: 250px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.84); 
+
+        }
+
+        .search-filter select:focus,
+        .search-filter input[type="text"]:focus {
+            border-color: #0056b3;  /* Darker blue on focus */
+        }
+
+        .search-filter button {
+            background-color: #007bff;  /* Blue background */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        /* Add hover effect */
+        .search-filter button:hover {
+            background-color: #0056b3; /* Darker blue on hover */
+            transform: scale(1.05); /* Slight zoom effect */
+        }
+
+        /* Styling for the filter button */
+        .search-filter button i {
+            margin-right: 8px;
+        }
+
+        .search-filter button:active {
+            transform: scale(1); /* Remove zoom effect on click */
+        }
+
+        /* Add media query for mobile responsiveness */
+        @media (max-width: 768px) {
+            .pagination-btn {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+/* html  */
+
+
