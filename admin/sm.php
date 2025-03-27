@@ -180,7 +180,6 @@ if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSu
 ?>
 
 <!DOCTYPE html>
-<<<<<<< HEAD
     <html lang="en">
     <head>
         <link rel="icon" href="/POSO/images/poso.png" type="image/png">
@@ -223,34 +222,6 @@ if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSu
                 <li><a href="settings.php" class="<?= $current_page == 'settings.php' ? 'active' : '' ?>"><i class="fas fa-cog"></i> Settings</a></li>
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
-=======
-<html lang="en">
-<head>
-    <link rel="icon" href="/POSO/images/poso.png" type="image/png">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reports</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
-    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"> </script>
-
-    <link rel="stylesheet" href="/poso/admin/css/sm.css">
-
-
-</head>
-<body>
-<div id="overlay"></div>
-
-    <nav class="navbar">
-        <img src="/POSO/images/left.png" alt="Left Logo" class="logo">
-        <div>
-            <p class="public" >PUBLIC ORDER & SAFETY OFFICE</p>
-            <p class="city">CITY OF BIÑAN, LAGUNA</p>
->>>>>>> e037f355bbe0f252ff516fff4e8190c093af044f
         </div>
         </header>
         <img class="bg" src="/POSO/images/plaza1.jpg" alt="Background Image">
