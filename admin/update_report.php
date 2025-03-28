@@ -15,7 +15,7 @@ include 'connection.php';
 // Get the ticket number from the URL or POST data
 $ticket_number = isset($_GET['ticket_number']) ? $_GET['ticket_number'] : (isset($_POST['ticket_number']) ? $_POST['ticket_number'] : '');
 
-// Check if the ticket_number exists in the database
+// Check if the ticket_number exists in the report table
 if (empty($ticket_number)) {
     echo "Ticket number is missing!";
     exit();
@@ -27,7 +27,7 @@ $stmt_check->execute();
 $result = $stmt_check->fetchColumn();
 
 if ($result == 0) {
-    echo "Ticket number does not exist!";
+    echo "Ticket number does not exist in the report table!";
     exit();
 }
 
@@ -50,6 +50,7 @@ $registration = isset($_POST['registration']) ? $_POST['registration'] : '';
 $status = isset($_POST['status']) ? $_POST['status'] : '';
 $amount = isset($_POST['amount']) ? $_POST['amount'] : '';
 $officer_name = isset($_POST['officer_name']) ? $_POST['officer_name'] : '';
+$receipt_num = isset($_POST['receipt_num']) ? $_POST['receipt_num'] : '';
 
 // Collect other violation data.
 $others_violation_text = isset($_POST['others_violation_text']) ? $_POST['others_violation_text'] : null;
@@ -138,48 +139,34 @@ $violation_map =  [
     'ILLEGAL VENDING' => ['column' => 'ILV', 'penalty' => 200],
     'IMPOUNDED' => ['column' => 'IMP', 'penalty' => 800]
 ];
-
-// Prepare the update query for discount table
-$update_fields = [];
-$params = [':ticket_number' => $ticket_number];
-
-foreach ($violation_map as $violation => $data) {
-    $column = $data['column'];
-    $penalty = $data['penalty'];
-
-    if(in_array($violation, $new_violations)) {
-        $update_fields[] = "$column = :$column";
-        $params[":$column"] = $penalty;
-    } else {
-        $update_fields[] = "$column = NULL";
-    }
-}
-
-// Update OTHERS and OTHERS_P
-$update_fields[] = "OTHERS = :others_violation_text";
-$update_fields[] = "OTHERS_P = :others_violation_amount";
-$params[':others_violation_text'] = $others_violation_text;
-$params[':others_violation_amount'] = $others_violation_amount;
-
-if (!empty($update_fields)) {
-    $sql_update_discount = "UPDATE discount SET " . implode(", ", $update_fields) . " WHERE ticket_number = :ticket_number";
-    $stmt_update = $conn->prepare($sql_update_discount);
-    $stmt_update->execute($params);
-}
-
-// Update the STATUS in the discount table
-$stmt_status = $conn->prepare("UPDATE discount SET STATUS = :status WHERE ticket_number = :ticket_number");
-$stmt_status->bindParam(':status', $status);
-$stmt_status->bindParam(':ticket_number', $ticket_number);
-
-try {
-    $stmt_status->execute();
-} catch (PDOException $e) {
-    echo "Error updating status: " . $e->getMessage();
-    exit();
-}
-
-// Redirect after update
-header("Location: report.php");
-exit();
 ?>
+
+<script>
+    if (confirm("Are you sure you want to update the details for Ticket Number <?php echo $ticket_number; ?>? Any incorrect or unjustified changes—especially those made without proper documentation or proof—may result in serious consequences.")) {
+        var formData = new FormData();
+        formData.append('ticket_number', '<?php echo $ticket_number; ?>');
+        formData.append('status', '<?php echo $status; ?>');
+        formData.append('receipt_num', '<?php echo $receipt_num; ?>');
+        formData.append('others_violation_text', '<?php echo $others_violation_text; ?>');
+        formData.append('others_violation_amount', '<?php echo $others_violation_amount; ?>');
+        formData.append('violations', JSON.stringify(<?php echo json_encode($new_violations); ?>));
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'update_discount_ajax.php', true);
+        xhr.onload = function() {
+            if (xhr.status >= 200 && xhr.status < 400) {
+                window.location.href = "report.php";
+            } else {
+                alert('An error occurred during the update.');
+                window.location.href = "sm.php?ticket_number=<?php echo $ticket_number; ?>";
+            }
+        };
+        xhr.onerror = function() {
+            alert('An error occurred during the update.');
+            window.location.href = "sm.php?ticket_number=<?php echo $ticket_number; ?>";
+        };
+        xhr.send(formData);
+    } else {
+        window.location.href = "sm.php?ticket_number=<?php echo $ticket_number; ?>";
+    }
+</script>

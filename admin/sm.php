@@ -52,6 +52,7 @@ if (!$report) {
 
 // Initialize penalty-related variables
 $status = $amount = $officer_name = $officer_signature = '';
+$receipt_num = ''; // Initialize receipt_num
 
 // Fetch violations from discount table
 $stmt = $conn->prepare("
@@ -69,6 +70,7 @@ $discountSubtotal = 0;
 //Get Status from discount table
 if($discount){
     $status = $discount['STATUS'];
+    $receipt_num = $discount['receipt_num']; // Get receipt number
 }
 
 if ($discount) {
@@ -100,7 +102,7 @@ if ($discount) {
     if ($discount['INF'] != null) { $selectedViolations[] = 'INVALID OR NO FRANCHISE/COLORUM'; $discountSubtotal += $discount['INF']; }
     if ($discount['WSS'] != null) { $selectedViolations[] = 'WEARING SLIPPERS/SHORTS/SANDO'; $discountSubtotal += $discount['WSS']; }
     if ($discount['OBS'] != null) { $selectedViolations[] = 'OBSTRUCTION'; $discountSubtotal += $discount['OBS']; }
-   
+
     if ($discount['OTHERS'] != null) {
         $othersViolationText = $discount['OTHERS'];
     }
@@ -130,6 +132,8 @@ if ($officer) {
     $officer_name = $officer['o_firstname'] . ' ' . $officer['o_lastname'];
     $officer_signature = $officer['o_signature'];
 }
+
+$isPaid = ($status === 'Paid');
 
 ?>
 
@@ -192,23 +196,23 @@ if ($officer) {
                 <br>
                 <div class="info-container">
                     <div><strong>First Name:</strong></div>
-                    <div><input type="text" name="first_name" value="<?= htmlspecialchars($report['first_name']) ?>"></div>
+                    <div><input type="text" name="first_name" value="<?= htmlspecialchars($report['first_name']) ?>" <?= $isPaid ? 'readonly' : '' ?>></div>
                 </div>
                 <div class="info-container">
                     <div><strong>Middle Name:</strong></div>
-                    <div><input type="text" name="middle_name" value="<?= htmlspecialchars($report['middle_name']) ?>"></div>
+                    <div><input type="text" name="middle_name" value="<?= htmlspecialchars($report['middle_name']) ?>" <?= $isPaid ? 'readonly' : '' ?>></div>
                 </div>
                 <div class="info-container">
                     <div><strong>Last Name:</strong></div>
-                    <div><input type="text" name="last_name" value="<?= htmlspecialchars($report['last_name']) ?>"></div>
+                    <div><input type="text" name="last_name" value="<?= htmlspecialchars($report['last_name']) ?>" <?= $isPaid ? 'readonly' : '' ?>></div>
                 </div>
                 <div class="info-container">
                     <div><strong>Birthday:</strong></div>
-                    <div><input type="date" name="dob" value="<?= htmlspecialchars($report['dob']) ?>"></div>
+                    <div><input type="date" name="dob" value="<?= htmlspecialchars($report['dob']) ?>" <?= $isPaid ? 'readonly' : '' ?>></div>
                 </div>
                 <div class="info-container">
                     <div><strong>Address:</strong></div>
-                    <div><input type="text" name="address" value="<?= htmlspecialchars($report['address']) ?>"></div>
+                    <div><input type="text" name="address" value="<?= htmlspecialchars($report['address']) ?>" <?= $isPaid ? 'readonly' : '' ?>></div>
                 </div>
                 <div class="info-container">
                     <div><strong>License Number:</strong></div>
@@ -225,7 +229,7 @@ if ($officer) {
                 <div class="info-container">
                     <div><strong>License Confiscated:</strong></div>
                     <div>
-                        <select name="confiscated">
+                        <select name="confiscated" <?= $isPaid ? 'disabled' : '' ?>>
                             <option value="1" <?= $report['confiscated'] ? 'selected' : '' ?>>Yes</option>
                             <option value="0" <?= !$report['confiscated'] ? 'selected' : '' ?>>No</option>
                         </select>
@@ -247,7 +251,7 @@ if ($officer) {
                 <div class="info-container">
                     <div><strong>Vehicle Type:</strong></div>
                     <div>
-                        <select id="vehicle_type" name="vehicle_type" class="form-control">
+                        <select id="vehicle_type" name="vehicle_type" class="form-control" <?= $isPaid ? 'disabled' : '' ?>>
                             <option value="">Select Vehicle Type</option>
                             <option value="Passenger Car" <?= $report['vehicle_type'] == 'Passenger Car' ? 'selected' : '' ?>>Passenger Car</option>
                             <option value="Motorcycle or Scooter" <?= $report['vehicle_type'] == 'Motorcycle or Scooter' ? 'selected' : '' ?>>Motorcycle or Scooter</option>
@@ -267,7 +271,7 @@ if ($officer) {
                     <div><input type="text" name="registration" value="<?= htmlspecialchars($report['registration']) ?>"readonly></div>
                 </div><div class="info-container">
                     <div><strong>Vehicle Owner:</strong></div>
-                    <div><input type="text" name="vehicle_owner" value="<?= htmlspecialchars($report['vehicle_owner']) ?>"></div>
+                    <div><input type="text" name="vehicle_owner" value="<?= htmlspecialchars($report['vehicle_owner']) ?>" <?= $isPaid ? 'readonly' : '' ?>></div>
                 </div>
             </div>
 
@@ -276,7 +280,7 @@ if ($officer) {
                 <h3 class="title">VIOLATIONS and PENALTY</h3> <br>
 
                 <div class="section">
-                    <select class="violations" name="violations[]" multiple="multiple" style="width: 100%;">
+                    <select class="violations" name="violations[]" multiple="multiple" style="width: 100%;" <?= $isPaid ? 'disabled' : '' ?>>
                         <option value="ARROGANT" data-price="1000" <?= in_array('ARROGANT', $selectedViolations) ? 'selected' : '' ?>>ARROGANT</option>
                         <option value="DISREGARDING TRAFFIC OFFICER" data-price="200" <?= in_array('DISREGARDING TRAFFIC OFFICER', $selectedViolations) ? 'selected' : '' ?>>DISREGARDING TRAFFIC OFFICER</option>
                         <option value="DISREGARDING TRAFFIC SIGNS" data-price="200" <?= in_array('DISREGARDING TRAFFIC SIGNS', $selectedViolations) ? 'selected' : '' ?>>DISREGARDING TRAFFIC SIGNS</option>
@@ -304,9 +308,10 @@ if ($officer) {
                         <option value="UNREGISTERED MOTOR VEHICLE" data-price="500" <?= in_array('UNREGISTERED MOTOR VEHICLE', $selectedViolations) ? 'selected' : '' ?>>UNREGISTERED MOTOR VEHICLE</option>
                         <option value="INVALID OR NO FRANCHISE/COLORUM" data-price="2000" <?= in_array('INVALID OR NO FRANCHISE/COLORUM', $selectedViolations) ? 'selected' : '' ?>>INVALID OR NO FRANCHISE/COLORUM</option>
                         <option value="WEARING SLIPPERS/SHORTS/SANDO" data-price="300" <?= in_array('WEARING SLIPPERS/SHORTS/SANDO', $selectedViolations) ? 'selected' : '' ?>>WEARING SLIPPERS/SHORTS/SANDO</option>
+                        <option value="OBSTRUCTION" data-price="200" <?= in_array('OBSTRUCTION', $selectedViolations) ? 'selected' : '' ?>>OBSTRUCTION</option>
                     </select>
                     <br><br>
-                
+
                     <div class="info-container ">
                         <div><strong>Subtotal:</strong></div>
                         <div><input type="number" name="subtotal" id="subtotal" value="<?= $discountSubtotal ?>" step="0.01" readonly></div>
@@ -317,7 +322,7 @@ if ($officer) {
                             <strong>Others Violation:</strong>
                         </div>
                         <div>
-                            <input type="text" name="others_violation_text" value="<?= htmlspecialchars($othersViolationText) ?>">
+                            <input type="text" name="others_violation_text" value="<?= htmlspecialchars($othersViolationText) ?>" <?= $isPaid ? 'readonly' : '' ?>>
                         </div>
                     </div>
                     <div class="info-container">
@@ -325,19 +330,25 @@ if ($officer) {
                             <strong>Others Violation Amount:</strong>
                         </div>
                         <div>
-                            <input type="number" name="others_violation_amount" id="others_violation_amount" value="<?= htmlspecialchars($othersViolationAmount) ?>" step="0.01">
+                            <input type="number" name="others_violation_amount" id="others_violation_amount" value="<?= htmlspecialchars($othersViolationAmount) ?>" step="0.01" <?= $isPaid ? 'readonly' : '' ?>>
                         </div>
                     </div>
                     <?php endif; ?>
                     <div class="info-container">
                         <div><strong>Status:</strong></div>
                         <div>
-                            <select name="status">
+                            <select name="status" id="status-select" <?= $isPaid ? 'disabled' : '' ?>>
                                 <option value="Paid" <?= $status == 'Paid'? 'selected' : '' ?>>Paid</option>
                                 <option value="Unpaid" <?= $status == 'Unpaid' ? 'selected' : '' ?>>Unpaid</option>
                                 <option value="Overdue" <?= $status == 'Overdue' ? 'selected' : '' ?>>Overdue</option>
                                 <option value="Pending" <?= $status == 'Pending' ? 'selected' : '' ?>>Pending</option>
                             </select>
+                        </div>
+                    </div>
+                    <div class="info-container" id="receipt-num-container" style="display: <?= $status == 'Paid' ? 'flex' : 'none' ?>;">
+                        <div><strong>Receipt Number:</strong></div>
+                        <div>
+                            <input type="text" name="receipt_num" value="<?= htmlspecialchars($receipt_num) ?>" <?= $isPaid ? 'readonly' : '' ?>>
                         </div>
                     </div>
                     <div class="info-container">
@@ -369,12 +380,12 @@ if ($officer) {
                                 <?= htmlspecialchars($report['violator_signature']) ?>
                             <?php endif; ?>
                         </div>
-</div>
+                    </div>
                 </div>
             </div>
             <div style="text-align: center;">
-                <button type="submit" class="update-btn">Update</button>
-                <a href="vb.php?ticket_number=<?= htmlspecialchars($report['ticket_number']) ?>" class="see">See Breakdown of Violations</a>
+                <button type="submit" class="update-btn" <?= $isPaid ? 'style="display:none;"' : '' ?>>Update</button>
+                <a href="vb.php?ticket_number=<?= htmlspecialchars($report['ticket_number']) ?>" class="see" <?= $isPaid ? 'style="display:none;"' : '' ?>>See Breakdown of Violations</a>
             </div>
 
         </form>
@@ -433,6 +444,15 @@ if ($officer) {
                 $('#total_amount').val((subtotal + othersAmount).toFixed(2));
             }
             updateTotalAmount();
+
+            // Show/hide receipt number input
+            $('#status-select').on('change', function() {
+                if ($(this).val() === 'Paid') {
+                    $('#receipt-num-container').show();
+                } else {
+                    $('#receipt-num-container').hide();
+                }
+            });
         })
     </script>
 </body>

@@ -40,13 +40,13 @@ $start = ($page - 1) * $limit; // Calculate the starting row
 
 // Prepare the base query with a WHERE clause for search term
 $sql = "
-    SELECT 
+    SELECT
         r.ticket_number,
         r.violation_date,
         r.first_name,
         r.last_name,
         d.STATUS as payment_status,
-        CASE 
+        CASE
             WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
             WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
             WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
@@ -59,30 +59,37 @@ $sql = "
             IFNULL(v2.others_violation, ''),
             IFNULL(v3.third_violation, ''),
             IFNULL(v3.others_violation, '')
-        ) AS violations
-    FROM 
+        ) AS violations,
+        r.created_at
+    FROM
         report AS r
-    LEFT JOIN 
+    LEFT JOIN
         violation AS v ON r.ticket_number = v.ticket_number
-    LEFT JOIN 
+    LEFT JOIN
         2_violation AS v2 ON r.ticket_number = v2.ticket_number
-    LEFT JOIN 
+    LEFT JOIN
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
     LEFT JOIN discount as d ON r.ticket_number = d.ticket_number
-    WHERE 
+    WHERE
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
         OR r.last_name LIKE :searchTerm)
 ";
 
-// Add a filter condition if a specific violation level is selected
+// Add a filter condition if a specific violation level or status is selected
 if ($filter) {
-    $sql .= " AND 
-        CASE 
-            WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
-            WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
-            WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
-        END = :filter";
+    if (in_array($filter, ['First Violation', 'Second Violation', 'Third Violation'])) {
+        $sql .= " AND CASE
+                    WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
+                    WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
+                    WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
+                END = :filter";
+    } elseif ($filter === 'New') {
+        $sql .= " AND r.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
+    } else {
+        // Filter by status (Paid, Unpaid, Pending, Overdue)
+        $sql .= " AND d.STATUS = :filter";
+    }
 }
 
 // Add order by clause for ticket number
@@ -97,7 +104,7 @@ $stmt->bindValue(':start', $start, PDO::PARAM_INT);
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 
 // Bind filter parameter if a filter is applied
-if ($filter) {
+if ($filter && $filter !== 'New') {
     $stmt->bindValue(':filter', $filter);
 }
 
@@ -106,22 +113,23 @@ $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get total number of records to calculate total pages
 $totalStmt = $conn->prepare("
-    SELECT COUNT(*) 
+    SELECT COUNT(*)
     FROM report AS r
-    LEFT JOIN 
+    LEFT JOIN
         violation AS v ON r.ticket_number = v.ticket_number
-    LEFT JOIN 
+    LEFT JOIN
         2_violation AS v2 ON r.ticket_number = v2.ticket_number
-    LEFT JOIN 
+    LEFT JOIN
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
-    WHERE 
+    LEFT JOIN discount as d ON r.ticket_number = d.ticket_number
+    WHERE
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
         OR r.last_name LIKE :searchTerm)
 ");
 
 // Add the filter to the total count query
-if ($filter) {
+if ($filter && $filter !== 'New') {
     $totalStmt->bindValue(':filter', $filter);
 }
 $totalStmt->bindValue(':searchTerm', '%' . $searchTerm . '%');
@@ -185,6 +193,13 @@ function getDiscountViolations($conn, $ticketNumber) {
     }
     return implode(', ', $violations);
 }
+
+// Function to check if a ticket is new (created within the last 24 hours)
+function isNewTicket($createdAt) {
+    $createdAtTimestamp = strtotime($createdAt);
+    $twentyFourHoursAgo = strtotime('-24 hours');
+    return $createdAtTimestamp > $twentyFourHoursAgo;
+}
 ?>
 
 <!DOCTYPE html>
@@ -209,6 +224,11 @@ function getDiscountViolations($conn, $ticketNumber) {
         }
         .status-pending {
             color: yellow;
+        }
+        .new-ticket {
+            color: green;
+            font-size: 0.8em;
+            margin-left: 5px;
         }
     </style>
 </head>
@@ -244,7 +264,6 @@ function getDiscountViolations($conn, $ticketNumber) {
                 <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
             </ul>
         </div>
-
         
         <div class="search-filter">
             <form action="report.php" method="get">
@@ -254,6 +273,11 @@ function getDiscountViolations($conn, $ticketNumber) {
                     <option value="First Violation" <?php echo ($filter == 'First Violation') ? 'selected' : ''; ?>>First Violation</option>
                     <option value="Second Violation" <?php echo ($filter == 'Second Violation') ? 'selected' : ''; ?>>Second Violation</option>
                     <option value="Third Violation" <?php echo ($filter == 'Third Violation') ? 'selected' : ''; ?>>Third Violation</option>
+                    <option value="Paid" <?php echo ($filter == 'Paid') ? 'selected' : ''; ?>>Paid</option>
+                    <option value="Unpaid" <?php echo ($filter == 'Unpaid') ? 'selected' : ''; ?>>Unpaid</option>
+                    <option value="Pending" <?php echo ($filter == 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                    <option value="Overdue" <?php echo ($filter == 'Overdue') ? 'selected' : ''; ?>>Overdue</option>
+                    <option value="New" style="display:none;">New</option>
                 </select>
                 <button type="submit"><i class="fas fa-search"></i> Search</button>
             </form>
@@ -264,22 +288,20 @@ function getDiscountViolations($conn, $ticketNumber) {
                 <tr>
                     <th>
                         <a class="link" href="?sort=ticket_number&order=<?php echo ($sortBy == 'ticket_number' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                        Ticket No. <i class="fa <?php echo ($sortBy == 'ticket_number' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                            Ticket No. <i class="fa <?php echo ($sortBy == 'ticket_number' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
                         </a>
-
                     </th>
                     <th>Name</th>
                     <th>
                         <a class="link" href="?sort=violation_level&order=<?php echo ($sortBy == 'violation_level' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                        Violation Level <i class="fa <?php echo ($sortBy == 'violation_level' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                            Violation Level <i class="fa <?php echo ($sortBy == 'violation_level' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
                         </a>
-
                     </th>
                     <th>Violation/s</th>
                     <th>
                         <a class="link" href="?sort=violation_date&order=<?php echo ($sortBy == 'violation_date' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                        Violation Date <i class="fa <?php echo ($sortBy == 'violation_date' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
-                    </a>
+                            Violation Date <i class="fa <?php echo ($sortBy == 'violation_date' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                        </a>
                     </th>
                     <th>Status</th>
                     <th>Action</th>
@@ -288,7 +310,12 @@ function getDiscountViolations($conn, $ticketNumber) {
             <tbody>
                 <?php foreach ($reports as $report) : ?>
                     <tr>
-                        <td><?php echo htmlspecialchars($report['ticket_number']); ?></td>
+                        <td>
+                            <?php echo htmlspecialchars($report['ticket_number']); ?>
+                            <?php if (isNewTicket($report['created_at'])): ?>
+                                <span class="new-ticket">NEW</span>
+                            <?php endif; ?>
+                        </td>
                         <td><?php echo htmlspecialchars($report['first_name']) . ' ' . htmlspecialchars($report['last_name']); ?></td>
                         <td><?php echo htmlspecialchars($report['violation_level']); ?></td>
                         <td><?php echo htmlspecialchars(getDiscountViolations($conn, $report['ticket_number'])); ?></td>
