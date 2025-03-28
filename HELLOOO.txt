@@ -1,0 +1,11 @@
+<?php
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+if (preg_match('/Mobile|Android|iPhone|iPad|iPod/', $userAgent)) {
+    header("Location: /poso.tix/index.php"); // Redirect to the mobile version
+    exit();
+} else {
+    header("Location: /admin/index.php"); // Redirect to the desktop version
+    exit();
+}
+?>

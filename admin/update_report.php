@@ -51,7 +51,11 @@ $status = isset($_POST['status']) ? $_POST['status'] : '';
 $amount = isset($_POST['amount']) ? $_POST['amount'] : '';
 $officer_name = isset($_POST['officer_name']) ? $_POST['officer_name'] : '';
 
-// Prepare the update query
+// Collect other violation data.
+$others_violation_text = isset($_POST['others_violation_text']) ? $_POST['others_violation_text'] : null;
+$others_violation_amount = isset($_POST['others_violation_amount']) ? $_POST['others_violation_amount'] : null;
+
+// Prepare the update query for the report table
 $stmt = $conn->prepare("UPDATE report SET 
     first_name = :first_name,
     middle_name = :middle_name,
@@ -143,7 +147,7 @@ foreach ($violation_map as $violation => $data) {
     $column = $data['column'];
     $penalty = $data['penalty'];
 
-    if (in_array($violation, $new_violations)) {
+    if(in_array($violation, $new_violations)) {
         $update_fields[] = "$column = :$column";
         $params[":$column"] = $penalty;
     } else {
@@ -151,10 +155,28 @@ foreach ($violation_map as $violation => $data) {
     }
 }
 
+// Update OTHERS and OTHERS_P
+$update_fields[] = "OTHERS = :others_violation_text";
+$update_fields[] = "OTHERS_P = :others_violation_amount";
+$params[':others_violation_text'] = $others_violation_text;
+$params[':others_violation_amount'] = $others_violation_amount;
+
 if (!empty($update_fields)) {
     $sql_update_discount = "UPDATE discount SET " . implode(", ", $update_fields) . " WHERE ticket_number = :ticket_number";
     $stmt_update = $conn->prepare($sql_update_discount);
     $stmt_update->execute($params);
+}
+
+// Update the STATUS in the discount table
+$stmt_status = $conn->prepare("UPDATE discount SET STATUS = :status WHERE ticket_number = :ticket_number");
+$stmt_status->bindParam(':status', $status);
+$stmt_status->bindParam(':ticket_number', $ticket_number);
+
+try {
+    $stmt_status->execute();
+} catch (PDOException $e) {
+    echo "Error updating status: " . $e->getMessage();
+    exit();
 }
 
 // Redirect after update

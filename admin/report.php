@@ -40,13 +40,13 @@ $start = ($page - 1) * $limit; // Calculate the starting row
 
 // Prepare the base query with a WHERE clause for search term
 $sql = "
-    SELECT  
+    SELECT 
         r.ticket_number,
         r.violation_date,
         r.first_name,
         r.last_name,
-        COALESCE(v.STATUS, v2.STATUS, v3.STATUS) AS payment_status,
-        CASE  
+        d.STATUS as payment_status,
+        CASE 
             WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
             WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
             WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
@@ -60,15 +60,16 @@ $sql = "
             IFNULL(v3.third_violation, ''),
             IFNULL(v3.others_violation, '')
         ) AS violations
-    FROM  
+    FROM 
         report AS r
-    LEFT JOIN  
+    LEFT JOIN 
         violation AS v ON r.ticket_number = v.ticket_number
-    LEFT JOIN  
+    LEFT JOIN 
         2_violation AS v2 ON r.ticket_number = v2.ticket_number
-    LEFT JOIN  
+    LEFT JOIN 
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
-    WHERE  
+    LEFT JOIN discount as d ON r.ticket_number = d.ticket_number
+    WHERE 
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
         OR r.last_name LIKE :searchTerm)
@@ -76,8 +77,8 @@ $sql = "
 
 // Add a filter condition if a specific violation level is selected
 if ($filter) {
-    $sql .= " AND  
-        CASE  
+    $sql .= " AND 
+        CASE 
             WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
             WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
             WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
@@ -91,7 +92,7 @@ $sql .= " ORDER BY r.ticket_number ASC";
 $sql .= " LIMIT :start, :limit";
 
 $stmt = $conn->prepare($sql);
-$stmt->bindValue(':searchTerm', '%' . $searchTerm . '%');  // Wildcards for partial match
+$stmt->bindValue(':searchTerm', '%' . $searchTerm . '%'); // Wildcards for partial match
 $stmt->bindValue(':start', $start, PDO::PARAM_INT);
 $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
 
@@ -105,15 +106,15 @@ $reports = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Get total number of records to calculate total pages
 $totalStmt = $conn->prepare("
-    SELECT COUNT(*)  
+    SELECT COUNT(*) 
     FROM report AS r
-    LEFT JOIN  
+    LEFT JOIN 
         violation AS v ON r.ticket_number = v.ticket_number
-    LEFT JOIN  
+    LEFT JOIN 
         2_violation AS v2 ON r.ticket_number = v2.ticket_number
-    LEFT JOIN  
+    LEFT JOIN 
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
-    WHERE  
+    WHERE 
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
         OR r.last_name LIKE :searchTerm)
@@ -196,11 +197,24 @@ function getDiscountViolations($conn, $ticketNumber) {
     <link rel="stylesheet" href="/poso/admin/css/report.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
+    <style>
+        .status-paid {
+            color: green;
+        }
+        .status-unpaid {
+            color: red;
+        }
+        .status-overdue {
+            color: orange;
+        }
+        .status-pending {
+            color: yellow;
+        }
+    </style>
 </head>
 
 <body>
-<img class="bg" src="/POSO/images/reports1.jpg" alt="Background Image">
+    <img class="bg" src="/POSO/images/reports1.jpg" alt="Background Image">
 
     <div id="overlay"></div>
 
@@ -249,23 +263,23 @@ function getDiscountViolations($conn, $ticketNumber) {
             <thead>
                 <tr>
                     <th>
-                    <a class="link" href="?sort=ticket_number&order=<?php echo ($sortBy == 'ticket_number' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                    Ticket No. <i class="fa <?php echo ($sortBy == 'ticket_number' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
-                    </a>
+                        <a class="link" href="?sort=ticket_number&order=<?php echo ($sortBy == 'ticket_number' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
+                        Ticket No. <i class="fa <?php echo ($sortBy == 'ticket_number' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                        </a>
 
                     </th>
                     <th>Name</th>
                     <th>
-                    <a class="link" href="?sort=violation_level&order=<?php echo ($sortBy == 'violation_level' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                    Violation Level <i class="fa <?php echo ($sortBy == 'violation_level' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
-                    </a>
+                        <a class="link" href="?sort=violation_level&order=<?php echo ($sortBy == 'violation_level' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
+                        Violation Level <i class="fa <?php echo ($sortBy == 'violation_level' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                        </a>
 
                     </th>
                     <th>Violation/s</th>
                     <th>
-                    <a class="link" href="?sort=violation_date&order=<?php echo ($sortBy == 'violation_date' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
-                    Violation Date <i class="fa <?php echo ($sortBy == 'violation_date' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
-                   </a>
+                        <a class="link" href="?sort=violation_date&order=<?php echo ($sortBy == 'violation_date' && $sortOrder == 'asc') ? 'desc' : 'asc'; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>">
+                        Violation Date <i class="fa <?php echo ($sortBy == 'violation_date' ? ($sortOrder == 'asc' ? 'fa-arrow-up-short-wide' : 'fa-arrow-down-wide-short') : 'fa-arrows-up-down'); ?>"></i>
+                    </a>
                     </th>
                     <th>Status</th>
                     <th>Action</th>
@@ -279,7 +293,26 @@ function getDiscountViolations($conn, $ticketNumber) {
                         <td><?php echo htmlspecialchars($report['violation_level']); ?></td>
                         <td><?php echo htmlspecialchars(getDiscountViolations($conn, $report['ticket_number'])); ?></td>
                         <td><?php echo htmlspecialchars($report['violation_date']); ?></td>
-                        <td><?php echo htmlspecialchars($report['payment_status']); ?></td>
+                        <td class="<?php
+                            switch (htmlspecialchars($report['payment_status'])) {
+                                case 'Paid':
+                                    echo 'status-paid';
+                                    break;
+                                case 'Unpaid':
+                                    echo 'status-unpaid';
+                                    break;
+                                case 'Overdue':
+                                    echo 'status-overdue';
+                                    break;
+                                case 'Pending':
+                                    echo 'status-pending';
+                                    break;
+                                default:
+                                    break;
+                            }
+                        ?>">
+                            <?php echo htmlspecialchars($report['payment_status']); ?>
+                        </td>
                         <td>
                             <a href="sm.php?ticket_number=<?php echo htmlspecialchars($report['ticket_number']); ?>" class="pagination-btn">View</a>
                         </td>
@@ -289,31 +322,31 @@ function getDiscountViolations($conn, $ticketNumber) {
         </table>
 
         <div class="pagination">
-            <?php 
+            <?php
                 // Show previous button only if not on the first page
-                if ($page > 1): 
+                if ($page > 1):
             ?>
                 <a href="?page=<?php echo max(1, $page - 1); ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>&sort=<?php echo $sortBy; ?>&order=<?php echo $sortOrder; ?>" class="pagination-btn previous">Prev</a>
             <?php endif; ?>
 
-            <?php 
+            <?php
                 // Display numbered pagination links
                 for ($i = 1; $i <= $totalPages; $i++):
-                    $activeClass = ($i == $page) ? 'active' : '';  // Highlight the current page
+                    $activeClass = ($i == $page) ? 'active' : ''; // Highlight the current page
             ?>
                 <a href="?page=<?php echo $i; ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>&sort=<?php echo $sortBy; ?>&order=<?php echo $sortOrder; ?>" class="pagination-btn <?php echo $activeClass; ?>"><?php echo $i; ?></a>
             <?php endfor; ?>
 
-            <?php 
+            <?php
                 // Show next button only if not on the last page
-                if ($page < $totalPages): 
+                if ($page < $totalPages):
             ?>
                 <a href="?page=<?php echo min($totalPages, $page + 1); ?>&search=<?php echo urlencode($searchTerm); ?>&filter=<?php echo urlencode($filter); ?>&sort=<?php echo $sortBy; ?>&order=<?php echo $sortOrder; ?>" class="pagination-btn next">Next</a>
             <?php endif; ?>
         </div>
     </div>
 
-    <script> 
+    <script>
         //hamburger and sidebar
         const hamburgerIcon = document.getElementById('hamburger-icon');
         const sidebar = document.getElementById('sidebar');
