@@ -116,7 +116,7 @@ if (isset($_GET['clear'])) {
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/POSO/tracker/css/style.css">
+    <link rel="stylesheet" href="/POSO/tracker/css/tracker.css">
     <title>POSO Violation Tracker</title>
     <style>
         .no-data {
@@ -128,11 +128,16 @@ if (isset($_GET['clear'])) {
     </style>
 </head>
 <body>
+
+
     <div class="main-content">
-        <header>
-            <img src="/POSO/images/left.png" alt="City Logo">
-            <h1>PUBLIC ORDER & SAFETY OFFICE<br>CITY OF BIÑAN</h1>
-            <img src="/POSO/images/arman.png" alt="POSO Logo">
+    <header class="navbar">
+            <img src="/POSO/images/left.png" alt="City Logo" class="logo">
+            <div>
+                <p class="public">PUBLIC ORDER & SAFETY OFFICE</p>
+                <p class="city">CITY OF BIÑAN, LAGUNA</p>
+            </div>
+            <img src="/POSO/images/arman.png" alt="POSO Logo" class="logo">
         </header>
         <br><br> 
 

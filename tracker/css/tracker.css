@@ -11,33 +11,40 @@ body, html {
 /* Main Content */
 .main-content {
     margin: 0 auto; /* Center the main content */
-    padding: 20px;
 }
 
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Keeps the logos on the left and right */
-    background-color:#2161EC;
-    color: #fff;
-    padding: 20px; /* Keep the header's original padding */
-    border-radius: 5px;
-    max-width: 2000px;
-    margin: 0 auto; /* Center the header */
+.navbar {
+    position: fixed;
+    width: 100%;
+    display: flex; /* Use flexbox layout */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    margin-bottom: 20px; /* Space below the header */
+    background-color: #010c54;
+    color: white;
+    border-bottom-style: outset;
+    border-color: #95d6ff;
+    border-width: 5px; /* Set the width of the border */
+    z-index: 99;
 }
 
-header h1 {
-    font-size: 32px;
-    text-align: center;
-    margin: 0 10px;
-    flex-grow: 1; /* Makes the header text take up the remaining space */
+.public{
+font-size: 25px;
+font-weight: bold;
+margin-top: 25px;
 }
 
-header img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    margin: 0 5px; /* Adds a small gap between logos and text */
+.city{
+font-size: 15px;
+margin-top: 10px;
+margin-bottom: 12px;
+text-align: center;
+}
+
+.logo {
+width: 60px; 
+height: auto; 
+margin: 0 100px; /* Space between logo and text */
 }
 
 /* Report Container */
@@ -49,6 +56,7 @@ header img {
     margin: 20px auto; /* Center the container */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     max-width: 1000px;
+    margin-top: 10%;
 }
 
 .report-container h1 {
@@ -80,7 +88,7 @@ header img {
 .search-bar input {
     width: 250px;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 2px solid #95d6ff;
     border-radius: 5px;
     margin-right: 10px;
 }

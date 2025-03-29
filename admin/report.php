@@ -209,22 +209,10 @@ function isNewTicket($createdAt) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports</title>
-    <link rel="stylesheet" href="/poso/admin/css/report.css">
+    <link rel="stylesheet" href="/poso/admin/css/report1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .status-paid {
-            color: green;
-        }
-        .status-unpaid {
-            color: red;
-        }
-        .status-overdue {
-            color: orange;
-        }
-        .status-pending {
-            color: yellow;
-        }
         .new-ticket {
             color: green;
             font-size: 0.8em;

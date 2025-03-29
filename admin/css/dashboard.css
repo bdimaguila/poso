@@ -30,9 +30,8 @@ body {
 .data-analytics-container {
     width: 100%;
     padding: 20px;
-    background-color: #f4f4f400;
-    margin-top: 20px;
-}
+    background-color: #ff000000;
+    margin-top: 20px;}
 
 .analytics-container {
     display: flex;
@@ -46,12 +45,31 @@ body {
     text-align: center;
     background-color: rgb(207, 247, 247);
     padding: 20px;
-    border: 5px solid rgba(31, 26, 26, 0.669);
+    border: 5px solid #95d6ff;
     border-radius: 8px;
     box-shadow: 0 8px 10px rgb(0, 0, 0);
     margin: 10px;
     width: 280px;
+    height: 250px;
 }
+
+.container .number-display {
+    color: rgb(58, 98, 115);
+    font-size: 35px; /* Default size */
+}
+
+.container:hover .c1 {
+    transform: scale(1.1); /* Slightly enlarges c1 */
+    transition: transform 0.3s ease; /* Smooth transition effect */
+    color:rgb(241, 241, 158) !important;
+}
+
+.container:hover .c2 {
+    transform: scale(1.1); /* Slightly enlarges c1 */
+    transition: transform 0.3s ease; /* Smooth transition effect */
+    color:rgb(241, 241, 158) !important;
+}
+
 
 h2 {
     font-size: 10px;
@@ -88,7 +106,7 @@ h2 {
         align-items: center; /* Center items vertically */
         justify-content: center; /* Center items horizontally */
         margin-bottom: 20px; /* Space below the header */
-        background-color: #000000;
+        background-color: #00000098;
         color: white;
         border-bottom-style: outset;
         border-color: #95d6ff;

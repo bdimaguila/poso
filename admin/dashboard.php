@@ -97,7 +97,7 @@ $ticketCount = $rowTicketCount['ticket_count'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
-    <link rel="stylesheet" href="/poso/admin/css/dashboard1.css">
+    <link rel="stylesheet" href="/poso/admin/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -142,26 +142,30 @@ $ticketCount = $rowTicketCount['ticket_count'];
         </header>
 
         <div class="data-analytics-container">
-            <h1 class="data" style="text-align: center; color:white;">DATA ANALYTICS</h1>
+            <h1 class="data" style="text-align: center; color:white;">DATA ANALYTICS</h1> <br><br>
             <div class="analytics-container">
                 <div class="container">
-                    <a href="report.php?filter=New">
-                        <h2>New Tickets</h2>
+                    <div class="c1">
+                    <a href="report.php?filter=New" class="DA">
+                        <h2>New Tickets</h2> <br><br>
                         <div class="number-display">
                             <?php echo $newTicketsCount; ?>
                         </div>
                     </a>
+                 </div>
                 </div>
                 <div class="container">
+                <div class="c2">
                     <a href="report.php?filter=Overdue">
-                        <h2>Overdue Tickets</h2>
+                        <h2>Overdue Tickets</h2>  <br><br>
                         <div class="number-display">
                             <?php echo $overdueTicketsCount; ?>
                         </div>
                     </a>
+                    </div>
                 </div>
                 <div class="container">
-                    <h2>Ticket Count</h2>
+                    <h2>Ticket Count</h2>  <br><br>
                     <div class="number-display">
                         <?php echo $ticketCount; ?>
                     </div>

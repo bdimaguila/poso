@@ -81,6 +81,7 @@ if ($discount) {
     if ($discount['DUV'] != null) { $selectedViolations[] = 'DRIVING UNREGISTERED VEHICLE'; $discountSubtotal += $discount['DUV']; }
     if ($discount['DWL'] != null) { $selectedViolations[] = 'DRIVING WITHOUT LICENSE/INVALID LICENSE'; $discountSubtotal += $discount['DWL']; }
     if ($discount['FTWH'] != null) { $selectedViolations[] = 'FAILURE TO WEAR HELMET'; $discountSubtotal += $discount['FTWH']; }
+    if ($discount['INF'] != null) { $selectedViolations[] = 'INVALID OR NO FRANCHISE/COLORUM'; $discountSubtotal += $discount['INF']; }
     if ($discount['ILP'] != null) { $selectedViolations[] = 'ILLEGAL PARKING'; $discountSubtotal += $discount['ILP']; }
     if ($discount['ILV'] != null) { $selectedViolations[] = 'ILLEGAL VENDING'; $discountSubtotal += $discount['ILV']; }
     if ($discount['IMP'] != null) { $selectedViolations[] = 'IMPOUNDED'; $discountSubtotal += $discount['IMP']; }
@@ -89,6 +90,7 @@ if ($discount) {
     if ($discount['LUZ'] != null) { $selectedViolations[] = 'LOADING/UNLOADING IN PROHIBITED ZONE'; $discountSubtotal += $discount['LUZ']; }
     if ($discount['NORCR'] != null) { $selectedViolations[] = 'NO OR/CR WHILE DRIVING'; $discountSubtotal += $discount['NORCR']; }
     if ($discount['NSM'] != null) { $selectedViolations[] = 'NO SIDE MIRROR'; $discountSubtotal += $discount['NSM']; }
+    if ($discount['OBS'] != null) { $selectedViolations[] = 'OBSTRUCTION'; $discountSubtotal += $discount['OBS']; }
     if ($discount['OMN'] != null) { $selectedViolations[] = 'OPEN MUFFLER/NUISANCE'; $discountSubtotal += $discount['OMN']; }
     if ($discount['ONEWAY'] != null) { $selectedViolations[] = 'ONEWAY'; $discountSubtotal += $discount['ONEWAY']; }
     if ($discount['OOL'] != null) { $selectedViolations[] = 'OPERATING OUT OF LINE'; $discountSubtotal += $discount['OOL']; }
@@ -99,9 +101,8 @@ if ($discount) {
     if ($discount['TCT'] != null) { $selectedViolations[] = 'TRIP - CUTTING'; $discountSubtotal += $discount['TCT']; }
     if ($discount['TRB'] != null) { $selectedViolations[] = 'TRUCK BAN'; $discountSubtotal += $discount['TRB']; }
     if ($discount['UMV'] != null) { $selectedViolations[] = 'UNREGISTERED MOTOR VEHICLE'; $discountSubtotal += $discount['UMV']; }
-    if ($discount['INF'] != null) { $selectedViolations[] = 'INVALID OR NO FRANCHISE/COLORUM'; $discountSubtotal += $discount['INF']; }
     if ($discount['WSS'] != null) { $selectedViolations[] = 'WEARING SLIPPERS/SHORTS/SANDO'; $discountSubtotal += $discount['WSS']; }
-    if ($discount['OBS'] != null) { $selectedViolations[] = 'OBSTRUCTION'; $discountSubtotal += $discount['OBS']; }
+    
 
     if ($discount['OTHERS'] != null) {
         $othersViolationText = $discount['OTHERS'];
@@ -150,7 +151,7 @@ $isPaid = ($status === 'Paid');
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"> </script>
-    <link rel="stylesheet" href="/poso/admin/css/sm.css">
+    <link rel="stylesheet" href="/poso/admin/css/sm1.css">
 </head>
 <body>
 <div id="overlay"></div>
@@ -184,7 +185,7 @@ $isPaid = ($status === 'Paid');
     </div>
     </header>
     <img class="bg" src="/POSO/images/plaza1.jpg" alt="Background Image">
-    <form class="sm mb-5" method="POST" action="update_report.php?ticket_number=<?= $_GET['ticket_number'] ?>">
+    <form class="sm mb-5 pb-5" method="POST" action="update_report.php?ticket_number=<?= $_GET['ticket_number'] ?>">
         <div class="inside">
             <h2 class="gray" style="display: flex; justify-content: space-between; align-items: center;">
                 ORDINANCE INFRACTION TICKET
@@ -387,10 +388,8 @@ $isPaid = ($status === 'Paid');
                 <button type="submit" class="update-btn" <?= $isPaid ? 'style="display:none;"' : '' ?>>Update</button>
                 <a href="vb.php?ticket_number=<?= htmlspecialchars($report['ticket_number']) ?>" class="see" <?= $isPaid ? 'style="display:none;"' : '' ?>>See Breakdown of Violations</a>
             </div>
-
         </form>
     </div>
-
 
     <script>
         //hamburger and sidebar
