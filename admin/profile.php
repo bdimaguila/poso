@@ -28,25 +28,32 @@ try {
         $username = $_POST['username'];
         $email = $_POST['email'];
         $password = $_POST['password'];
+        $image = null; // Initialize image to null
 
         // Handle profile image upload
         if (isset($_FILES['profile_image']) && $_FILES['profile_image']['tmp_name']) {
-            // Correctly read the image data from $_FILES
             $image = file_get_contents($_FILES['profile_image']['tmp_name']);
-            $updateQuery = "UPDATE login SET firstname = :firstname, lastname = :lastname, username = :username, email = :email, password = :password, image = :image WHERE ID = :user_id";
-            $updateStmt = $conn->prepare($updateQuery);
-            $updateStmt->bindParam(':image', $image, PDO::PARAM_LOB); // Bind as LOB
         } else {
-            $updateQuery = "UPDATE login SET firstname = :firstname, lastname = :lastname, username = :username, email = :email, password = :password WHERE ID = :user_id";
-            $updateStmt = $conn->prepare($updateQuery);
+            // If no new image is provided, keep the old image.
+            $query_old_image = "SELECT image FROM login WHERE ID = :user_id";
+            $stmt_old_image = $conn->prepare($query_old_image);
+            $stmt_old_image->bindParam(':user_id', $_SESSION['user_id'], PDO::PARAM_INT);
+            $stmt_old_image->execute();
+            $old_image = $stmt_old_image->fetch(PDO::FETCH_ASSOC);
+            if ($old_image && $old_image['image']) {
+                $image = $old_image['image'];
+            }
         }
 
+        $updateQuery = "UPDATE login SET firstname = :firstname, lastname = :lastname, username = :username, email = :email, password = :password, image = :image WHERE ID = :user_id";
+        $updateStmt = $conn->prepare($updateQuery);
         $updateStmt->bindParam(':firstname', $firstname);
         $updateStmt->bindParam(':lastname', $lastname);
         $updateStmt->bindParam(':username', $username);
         $updateStmt->bindParam(':email', $email);
         $updateStmt->bindParam(':password', $password);
         $updateStmt->bindParam(':user_id', $_SESSION['user_id']);
+        $updateStmt->bindParam(':image', $image, PDO::PARAM_LOB); // Bind image as LOB
         $updateStmt->execute();
 
         // Refresh user data after update
@@ -57,6 +64,7 @@ try {
     die("Error: " . $e->getMessage());
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -98,7 +106,7 @@ try {
         </ul>
     </div>
     <?php
-        $current_page = basename($_SERVER['PHP_SELF']);
+    $current_page = basename($_SERVER['PHP_SELF']);
     ?>
     <div class="sidebar" id="sidebar">
         <div class="logo">
@@ -136,7 +144,7 @@ try {
                         </div>
                     </div>
                     <div class="form-group text-center">
-                        <input type="file" name="profile_image" class="form-control-file" id="profileImage" style="display: none;">
+                        <input type="file" name="profile_image" class="form-control-file" id="profileImageInput" style="display: none;" disabled>
                     </div>
                     <div class="form-group mt-5">
                         <label>First Name:</label>
@@ -148,7 +156,7 @@ try {
                         <label>Username:</label>
                         <input type="text" name="username" class="form-control mb-2" value="<?= htmlspecialchars($user['username']) ?>" required id="username" disabled>
                     </div>
-<div class="form-group">
+                    <div class="form-group">
                         <label>Email:</label>
                         <input type="email" name="email" class="form-control mb-2" value="<?= htmlspecialchars($user['email']) ?>" required id="email" disabled>
                     </div>
@@ -169,6 +177,8 @@ try {
 document.addEventListener("DOMContentLoaded", function () {
     let isUpdating = false;
     let originalValues = {};
+    const profileImageInput = document.getElementById("profileImageInput");
+    const profileImagePreview = document.querySelector(".profile-image");
 
     document.getElementById("toggleUpdate").addEventListener("click", function () {
         const toggleButton = document.getElementById("toggleUpdate");
@@ -187,6 +197,8 @@ document.addEventListener("DOMContentLoaded", function () {
             isUpdating = true;
 
             profileOverlay.classList.remove("d-none");
+            profileImageInput.style.display = "block";
+            profileImageInput.disabled = false;
         } else {
             document.getElementById("firstname").value = originalValues.firstname;
             document.getElementById("lastname").value = originalValues.lastname;
@@ -198,50 +210,50 @@ document.addEventListener("DOMContentLoaded", function () {
             isUpdating = false;
 
             profileOverlay.classList.add("d-none");
+            profileImageInput.style.display = "none";
+            profileImageInput.disabled = true;
         }
 
         const elements = ["firstname", "lastname", "username", "email", "password"];
         elements.forEach(id => document.getElementById(id).disabled = !isUpdating);
 
         document.getElementById("updateButton").style.display = isUpdating ? "block" : "none";
-        document.getElementById("profileImage").style.display = isUpdating ? "block" : "none";
         document.getElementById("updateNotification").style.display = isUpdating ? "block" : "none";
     });
 
-    // Handle profile image change
-    document.getElementById("profileImage").addEventListener("change", function () {
+    profileImageInput.addEventListener("change", function () {
         const file = this.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                document.querySelector(".profile-image").src = e.target.result;
+                profileImagePreview.src = e.target.result;
             };
             reader.readAsDataURL(file);
         }
     });
-});
 
-//hamburger and sidebar
-const hamburgerIcon = document.getElementById('hamburger-icon');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
+    //hamburger and sidebar
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('overlay');
 
-hamburgerIcon.addEventListener('click', function(event) {
-    sidebar.classList.toggle('show');
-    overlay.classList.toggle('show');
-    event.stopPropagation();
-});
+    hamburgerIcon.addEventListener('click', function(event) {
+        sidebar.classList.toggle('show');
+        overlay.classList.toggle('show');
+        event.stopPropagation();
+    });
 
-overlay.addEventListener('click', function() {
-    sidebar.classList.remove('show');
-    overlay.classList.remove('show');
-});
-
-document.addEventListener('click', function(event) {
-    if (!sidebar.contains(event.target) && !hamburgerIcon.contains(event.target)) {
+    overlay.addEventListener('click', function() {
         sidebar.classList.remove('show');
         overlay.classList.remove('show');
-    }
+    });
+
+    document.addEventListener('click', function(event) {
+        if (!sidebar.contains(event.target) && !hamburgerIcon.contains(event.target)) {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        }
+    });
 });
 </script>
 </body>
