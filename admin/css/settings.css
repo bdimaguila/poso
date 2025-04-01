@@ -21,7 +21,7 @@ body {
     height: 100%;                /* Full viewport height */
     z-index: -1;                  /* Sends the background image behind other content */
     opacity: 1;
-    filter: brightness(40%); /* Lower values make it darker */
+    filter: brightness(40%);/* Lower values make it darker */
 }
 
 .navbar {
@@ -34,7 +34,7 @@ body {
     background-color: #0000006b;
     color: white;
     border-bottom-style: outset;
-    border-color: #95d6ff9f;
+    border-color: #95d6ff;
     border-width: 5px; /* Set the width of the border */
     z-index: 99;
 }
@@ -59,13 +59,30 @@ height: auto;
 margin: 0 100px; /* Space between logo and text */
 }
 
+.user {
+    color: #ffffff !important;
+    text-align: center;
+    font-size: 35px;
+    letter-spacing: 7px;
+    margin-top: 5%;
+    position: relative;
+    z-index: 11;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgb(0, 0, 0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px; /* Space between text and lines */
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+} 
 
-.data{
-color: rgb(0, 0, 0);
-text-align: center;
-font-size: 20px;
-margin-top: 15px;
-letter-spacing: 4px; 
+.user::before,
+.user::after {
+    content: "";
+    display: block;
+    width: 290px; 
+    height: 1px; 
+    background-color: #ffffff; 
 }
 
 
@@ -389,6 +406,7 @@ td:nth-child(4) { /* Targets Password Column */
 
   .card::before {
     content: '- R E G I S T E R -';
+    font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     text-align: center;
     color: white;
     display: flex;
@@ -404,7 +422,7 @@ td:nth-child(4) { /* Targets Password Column */
     border-bottom-style: outset;
     border-color: rgb(255, 255, 255);
     border-width: 5px;
-    font-size: 20px;
+    font-size: 25px;
   }
 
 
@@ -442,4 +460,33 @@ select {
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     display: none;
     z-index: 1001;
+}
+
+/* delete confirmation */
+
+#deleteModal .modal-content {
+    background-color: #faf5df !important;
+    height: 150px;
+    text-align: center;
+    border: 2px solid #3b5667 !important;
+    margin-top: 20%;
+}
+
+/* Specific styling for YES button */
+#deleteModal .delete-confirm-btn {
+    background-color: #28a745;
+    color: white;
+    border: 1px solid white !important;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.623); 
+    font-size: 16px;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    width: 80px;
+}
+
+#deleteModal .delete-confirm-btn:hover {
+    background-color: #218838;
+    font-weight: bold;
 }

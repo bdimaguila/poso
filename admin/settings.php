@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-    <link rel="stylesheet" href="/poso/admin/css/settings1.css">
+    <link rel="stylesheet" href="/poso/admin/css/settings.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -148,8 +148,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 </header>
 
-<div class="container mt-5 pt-5">
-    <h1 class="text-white  heading text-center mt-5 mb-5 ">USER MANAGEMENT </h1>
+<div class="container mt-5 pt-5"> <br>
+    <h1 class="user text-white  heading text-center mt-5 mb-5 ">- USER MANAGEMENT - </h1>
 
         <form action="" method="post" class="mb-4">
             <div class="row g-5">
@@ -218,9 +218,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <p>Are you sure you want to delete this user?</p>
             <form id="deleteForm" method="POST">
                 <input type="hidden" name="user_id" id="deleteUserId">
-                <input type="hidden" name="role" id="deleteUserRole">
-                <button type="submit" name="delete_user_confirmed" class="btn btn-danger">Delete User</button>
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Close</button>
+                <input type="hidden" name="role" id="deleteUserRole"> <br>
+                <button type="submit" name="delete_user_confirmed" class="delete-confirm-btn">YES</button>
+                <button type="button" class="btn btn-danger" onclick="closeDeleteModal()">NO</button>
             </form>
         </div>
     </div>
