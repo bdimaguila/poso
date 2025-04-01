@@ -24,7 +24,7 @@ function deleteUser($table, $id) {
 function addUser($table, $firstname, $lastname, $username, $email, $password, $signature) {
     global $conn;
     $query = "INSERT INTO $table (firstname, lastname, username, email, password, signature)
-                VALUES (:firstname, :lastname, :username, :email, :password, :signature)";
+                        VALUES (:firstname, :lastname, :username, :email, :password, :signature)";
     $stmt = $conn->prepare($query);
     $stmt->bindParam(':firstname', $firstname);
     $stmt->bindParam(':lastname', $lastname);
@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 
-    if (isset($_POST['delete_user'])) {
+    if (isset($_POST['delete_user_confirmed'])) { // Changed from delete_user
         $id = $_POST['user_id'];
         $role = $_POST['role'];
         $table = ($role == 'admin') ? 'login' : 'hh_login';
@@ -76,12 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"> <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap-grid.min.css">
 
-<!-- Bootstrap Grid (for layout) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap-grid.min.css">
-
-<!-- Bootstrap Forms (for form styling) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap-utilities.min.css">
 
 </head>
@@ -101,16 +97,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <img src="/POSO/images/arman.png" alt="POSO Logo" class="logo">
     
     <div class="hamburger" id="hamburger-icon">
-    <i class="fa fa-bars"></i> <!-- Font Awesome hamburger icon -->
-    </div>
+    <i class="fa fa-bars"></i> </div>
     </header>
 
-
     
- <!-- Overlay for the form -->
- <div id="formOverlay" onclick="closeForm()"></div>
+<div id="formOverlay" onclick="closeForm()"></div>
 
-<!-- Centered Form -->
 <div class="container d-flex justify-content-center align-items-center">
     <form class="card mt-5" id="userForm" method="POST" enctype="multipart/form-data">
         <label for="firstname">First Name:</label>
@@ -141,7 +133,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     </form>
 </div>
 
-
 <div class="sidebar" id="sidebar">
     <div class="logo">
         <img src="/POSO/images/right.png" alt="POSO Logo">
@@ -160,17 +151,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container mt-5 pt-5">
     <h1 class="text-white  heading text-center mt-5 mb-5 ">USER MANAGEMENT </h1>
 
-            <form action="" method="post" class="mb-4">
-                <div class="row g-5">
-                <button type="button" class="btn btn-success " onclick="toggleForm()">Add New User</button>
-                </div>
-            </form>
+        <form action="" method="post" class="mb-4">
+            <div class="row g-5">
+            <button type="button" class="btn btn-success " onclick="toggleForm()">Add New User</button>
+            </div>
+        </form>
 
     <div class="table-container">
-         <table class="table table-bordered mt-1 mb-5">
+        <table class="table table-bordered mt-1 mb-5">
             <thead>
                 <tr>
-                <th class="head">Full Name</th>
+                    <th class="head">Full Name</th>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Password</th>
@@ -193,11 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <td><img src='data:image/jpeg;base64," . base64_encode($row['signature']) . "' height='50'/></td>
                     <td>Admin</td>
                     <td>
-                        <form method='POST' style='display:inline;'>
-                            <input type='hidden' name='user_id' value='{$row['ID']}'>
-                            <input type='hidden' name='role' value='admin'>
-                            <button type='submit' name='delete_user' class='btn btn-danger'>Delete</button>
-                        </form>
+                        <button class='btn btn-danger' onclick='showDeleteModal(\"admin\", {$row['ID']})'>Delete</button>
                     </td>
                     </tr>";
             }
@@ -213,21 +200,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <td><img src='data:image/jpeg;base64," . base64_encode($row['signature']) . "' height='50'/></td>
                     <td>Officer</td>
                     <td>
-                        <form method='POST' style='display:inline;'>
-                            <input type='hidden' name='user_id' value='{$row['ID']}'>
-                            <input type='hidden' name='role' value='officer'>
-                            <button type='submit' name='delete_user' class='btn btn-danger'>Delete</button>
-                        </form>
+                        <button class='btn btn-danger' onclick='showDeleteModal(\"officer\", {$row['ID']})'>Delete</button>
+                        <a href='update_off.php?user_id={$row['ID']}' class='btn btn-primary'>Edit</a>
                     </td>
-                </tr>";
+                    </tr>";
             }
             ?>
     </tbody>
         </table>
         </div>
 
-
-
+    <div id="deleteModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeleteModal()">&times;</span>
+            <p>Are you sure you want to delete this user?</p>
+            <form id="deleteForm" method="POST">
+                <input type="hidden" name="user_id" id="deleteUserId">
+                <input type="hidden" name="role" id="deleteUserRole">
+                <button type="submit" name="delete_user_confirmed" class="btn btn-danger">Delete User</button>
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">Close</button>
+            </form>
+        </div>
+    </div>
 
     <script>
         //hamburger and sidebar
@@ -239,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             sidebar.classList.toggle('show'); // Toggle sidebar
             overlay.classList.toggle('show'); // Show overlay
             event.stopPropagation(); // Prevent immediate close
-        });
+});
 
         // Close sidebar & overlay when clicking on the overlay
         overlay.addEventListener('click', function() {
@@ -270,7 +264,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         function closeForm() {
             document.getElementById("userForm").style.display = "none";
             document.getElementById("formOverlay").style.display = "none";
-        } 
+        }
+
+        //delete modal
+        function showDeleteModal(role, id) {
+            document.getElementById('deleteUserId').value = id;
+            document.getElementById('deleteUserRole').value = role;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        // Close modal if user clicks outside of it
+        window.onclick = function(event) {
+            var modal = document.getElementById('deleteModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
     </script>
+
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
 </body>
 </html>
