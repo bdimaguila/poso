@@ -21,25 +21,34 @@ if ($ticket_number !== 'N/A') {
         $officerDetails = $result->fetch_assoc();
 
         // Check and update officer's details in the corresponding violation table
-        $tables = ['violation', '2_violation', '3_violation'];
-        $columns = ['o_firstname', 'o_lastname', 'o_signature', '2o_firstname', '2o_lastname', '2o_signature', '3o_firstname', '3o_lastname', '3o_signature'];
+        $tables = ['violation', '2_violation', '3_violation', 'm_violation'];
 
-        foreach ($tables as $index => $table) {
-            $sql = "SELECT * FROM $table WHERE ticket_number = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("i", $ticket_number);
-            $stmt->execute();
-            $result = $stmt->get_result();
+       foreach ($tables as $index => $table) {
+    $sql = "SELECT * FROM $table WHERE ticket_number = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $ticket_number);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-            if ($result->num_rows > 0) {
-                // Determine the correct column to update based on the table
-                $columnPrefix = $index === 0 ? '' : ($index === 1 ? '2' : '3');
-                $updateSql = "UPDATE $table SET {$columnPrefix}o_firstname = ?, {$columnPrefix}o_lastname = ?, {$columnPrefix}o_signature = ? WHERE ticket_number = ?";
-                $stmtUpdate = $conn->prepare($updateSql);
-                $stmtUpdate->bind_param("ssss", $officerDetails['firstname'], $officerDetails['lastname'], $officerDetails['signature'], $ticket_number);
-                $stmtUpdate->execute();
-            }
+    if ($result->num_rows > 0) {
+        // Determine the correct column to update based on the table
+        if ($table === 'm_violation') {
+            // Correct column names for m_violation table
+            $updateSql = "UPDATE $table SET mo_firstname = ?, mo_lastname = ?, mo_signature = ? WHERE ticket_number = ?"; // Corrected column name here
+        } else {
+            $columnPrefix = $index === 0 ? '' : ($index === 1 ? '2' : '3');
+            $updateSql = "UPDATE $table SET {$columnPrefix}o_firstname = ?, {$columnPrefix}o_lastname = ?, {$columnPrefix}o_signature = ? WHERE ticket_number = ?";
         }
+        $stmtUpdate = $conn->prepare($updateSql);
+
+        if($table === 'm_violation'){
+            $stmtUpdate->bind_param("ssss", $officerDetails['firstname'], $officerDetails['lastname'], $officerDetails['signature'], $ticket_number);
+        } else {
+            $stmtUpdate->bind_param("ssss", $officerDetails['firstname'], $officerDetails['lastname'], $officerDetails['signature'], $ticket_number);
+        }
+        $stmtUpdate->execute();
+    }
+}
     }
 
     $conn->close();
@@ -133,7 +142,6 @@ if ($ticket_number !== 'N/A') {
                 <p class="ticket-number">No. <?php echo htmlspecialchars($ticket_number); ?></p>
             </div>
 
-            <!-- Officer's Signature -->
             <div class="signature-section">
                 <div class="gray">
                     <h3>OFFICER'S SIGNATURE</h3>
@@ -166,7 +174,6 @@ if ($ticket_number !== 'N/A') {
                 <div class="canvas-container" id="officerSignatureCanvas"></div>
             </div>
 
-            <!-- Driver's Signature -->
             <div class="signature-section">
                 <div class="gray">
                     <h3>DRIVER'S SIGNATURE</h3>
@@ -174,13 +181,11 @@ if ($ticket_number !== 'N/A') {
                 <div class="canvas-container">
                     <canvas id="driverSignatureCanvas" width="300" height="150"></canvas>
                 </div>
-                
-                <!-- Message about penalty -->
+
                 <p class="penalty-message">
                     PAY THE PENALTY TO CITY/ MUNICIPAL TREASURER’S OFFICE WITHIN (3) DAYS. FAILURE TO DO SO WILL FORCE THE REFERRAL TO MUNICIPAL TRIAL COURT OF BINAN, LAGUNA FOR LEGAL ACTION.
                 </p>
 
-                <!-- Buttons -->
                 <button onclick="clearSignature()">Clear</button>
                 <button onclick="saveSignature()">Save</button>
                 <button onclick="submitTicket()">Done</button>

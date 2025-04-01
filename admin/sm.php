@@ -117,21 +117,37 @@ if ($discount) {
 // Calculate the total amount
 $amount = $discountSubtotal + $othersViolationAmount;
 
-// Fetch officer details
-$stmt = $conn->prepare("
-    SELECT o_firstname, o_lastname, o_signature FROM violation WHERE ticket_number = :ticket_number
-    UNION
-    SELECT 2o_firstname, 2o_lastname, 2o_signature FROM 2_violation WHERE ticket_number = :ticket_number
-    UNION
-    SELECT 3o_firstname, 3o_lastname, 3o_signature FROM 3_violation WHERE ticket_number = :ticket_number
+// Check if license and ticket_number exist in m_violation
+$stmt_m_violation = $conn->prepare("
+    SELECT mo_firstname, mo_lastname, mo_signature 
+    FROM m_violation 
+    WHERE license = :license AND ticket_number = :ticket_number
 ");
-$stmt->bindParam(':ticket_number', $ticket_number);
-$stmt->execute();
-$officer = $stmt->fetch(PDO::FETCH_ASSOC);
+$stmt_m_violation->bindParam(':license', $report['license']);
+$stmt_m_violation->bindParam(':ticket_number', $ticket_number);
+$stmt_m_violation->execute();
+$officer_m_violation = $stmt_m_violation->fetch(PDO::FETCH_ASSOC);
 
-if ($officer) {
-    $officer_name = $officer['o_firstname'] . ' ' . $officer['o_lastname'];
-    $officer_signature = $officer['o_signature'];
+if ($officer_m_violation) {
+    $officer_name = $officer_m_violation['mo_firstname'] . ' ' . $officer_m_violation['mo_lastname'];
+    $officer_signature = $officer_m_violation['mo_signature'];
+} else {
+    // Fetch officer details from other violation tables
+    $stmt_violation = $conn->prepare("
+        SELECT o_firstname, o_lastname, o_signature FROM violation WHERE ticket_number = :ticket_number
+        UNION
+        SELECT 2o_firstname, 2o_lastname, 2o_signature FROM 2_violation WHERE ticket_number = :ticket_number
+        UNION
+        SELECT 3o_firstname, 3o_lastname, 3o_signature FROM 3_violation WHERE ticket_number = :ticket_number
+    ");
+    $stmt_violation->bindParam(':ticket_number', $ticket_number);
+    $stmt_violation->execute();
+    $officer = $stmt_violation->fetch(PDO::FETCH_ASSOC);
+
+    if ($officer) {
+        $officer_name = $officer['o_firstname'] . ' ' . $officer['o_lastname'];
+        $officer_signature = $officer['o_signature'];
+    }
 }
 
 $isPaid = ($status === 'Released');

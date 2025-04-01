@@ -14,15 +14,17 @@ $last_name = $_GET['last_name'];
 $total_amount = $_GET['total'];
 
 // Fetch the violation record for the given ticket number
-$sql = "SELECT 'First Violation' AS violation_type, first_violation, first_total, notes FROM violation WHERE ticket_number = ?
-        UNION ALL
-        SELECT 'Second Violation' AS violation_type, second_violation, second_total, notes FROM 2_violation WHERE ticket_number = ?
-        UNION ALL
-        SELECT 'Third Violation' AS violation_type, third_violation, third_total, notes FROM 3_violation WHERE ticket_number = ?
-        ORDER BY violation_type ASC"; // Order the results by violation type
+$sql = "SELECT 'First Offense' AS violation_type, first_violation, first_total, notes FROM violation WHERE ticket_number = ?
+            UNION ALL
+            SELECT 'Second Offense' AS violation_type, second_violation, second_total, notes FROM 2_violation WHERE ticket_number = ?
+            UNION ALL
+            SELECT 'Third Offense' AS violation_type, third_violation, third_total, notes FROM 3_violation WHERE ticket_number = ?
+            UNION ALL
+            SELECT 'Multiple Offense' AS violation_type, mv AS first_violation, mt AS first_total, notes FROM m_violation WHERE ticket_number = ?
+            ORDER BY violation_type ASC"; // Order the results by violation type
 
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("iii", $ticket_number, $ticket_number, $ticket_number);
+$stmt->bind_param("iiii", $ticket_number, $ticket_number, $ticket_number, $ticket_number);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -34,8 +36,8 @@ $officer_result = $stmt_officer->get_result();
 $officer = $officer_result->fetch_assoc();
 $officer_name = $officer['officer_name'];
 
-// Fetch violator's information (name, license number, plate number, street, city/municipality from report table)
-$sql_violator = "SELECT CONCAT(last_name, ', ', first_name) AS violator_name, license, plate_number, street, city FROM report WHERE ticket_number = ?";
+// Fetch violator's information (name, license number, plate number, street, city/municipality, confiscated from report table)
+$sql_violator = "SELECT CONCAT(last_name, ', ', first_name) AS violator_name, license, plate_number, street, city, confiscated FROM report WHERE ticket_number = ?";
 $stmt_violator = $conn->prepare($sql_violator);
 $stmt_violator->bind_param("i", $ticket_number);
 $stmt_violator->execute();
@@ -46,6 +48,9 @@ $license_number = $violator['license'];
 $plate_number = $violator['plate_number'];
 $street = $violator['street'];
 $city = $violator['city'];
+$confiscated = $violator['confiscated'];
+
+$license_status = ($confiscated == 'yes') ? 'Confiscated' : 'Not Confiscated';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -56,7 +61,7 @@ $city = $violator['city'];
     <link rel="stylesheet" href="style1.css?v=1.0">
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <style>
-        .impound-warning {
+        .impound-warning, .license-confiscated-warning {
             color: red;
             text-align: center;
             font-weight: bold;
@@ -76,9 +81,9 @@ $city = $violator['city'];
         button {
             width: 120px;    /* Set a specific width */
             height: 35px;    /* Set a specific height */
-            padding: 0;        /* Remove padding */
+            padding: 0;      /* Remove padding */
             font-size: 14px;    /* Smaller font size */
-            margin: 5px;        /* Reduced margin */
+            margin: 5px;      /* Reduced margin */
             display: inline-block;
         }
         table {
@@ -94,7 +99,7 @@ $city = $violator['city'];
         th {
             background-color: #f0f0f0;
         }
- @media print {
+@media print {
             * {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -144,6 +149,7 @@ $city = $violator['city'];
                 <p>Name: <?php echo htmlspecialchars($violator_name); ?></p>
                 <p>License Number: <?php echo htmlspecialchars($license_number); ?></p>
                 <p>Plate Number: <?php echo htmlspecialchars($plate_number); ?></p>
+                <p>License Status: <?php echo htmlspecialchars($license_status); ?></p>
                 
                 <div class="gray">
                     <h3>BREAKDOWN OF VIOLATION CHARGES</h3>
@@ -151,12 +157,12 @@ $city = $violator['city'];
                 <table>
                     <thead>
                         <tr>
-                            <th>VIOLATION NUMBER</th>
+                            <th>OFFENSE LEVEL</th>
                             <th>VIOLATION</th>
                             <th>AMOUNT</th>
                         </tr>
                     </thead>
-                  <tbody>
+                    <tbody>
     <?php
     $impoundFound = false;
     $violation_columns = [
@@ -189,6 +195,7 @@ $city = $violator['city'];
         'ILV' => 'ILLEGAL VENDING',
         'IMP' => 'IMPOUNDED'
     ];
+    $totalAmount = 0;
 
     while ($violation = $result->fetch_assoc()) {
         $violation_details = htmlspecialchars($violation['first_violation'] ?? $violation['second_violation'] ?? $violation['third_violation']);
@@ -213,48 +220,68 @@ $city = $violator['city'];
                 foreach ($violation_columns as $col => $violation_name) {
                     if ($discount[$col] !== null) {
                         echo "<tr>
-                                <td>" . htmlspecialchars($violation['violation_type']) . "</td>
-                                <td>" . htmlspecialchars($violation_name) . "</td>
-                                <td>" . htmlspecialchars($discount[$col]) . "</td>
-                            </tr>";
+                                    <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                                    <td>" . htmlspecialchars($violation_name) . "</td>
+                                    <td>" . htmlspecialchars($discount[$col]) . "</td>
+                                </tr>";
+                        $totalAmount += $discount[$col];
                         $discount_applied = true;
                     }
                 }
                 if (!$discount_applied) {
                     echo "<tr>
-                            <td>" . htmlspecialchars($violation['violation_type']) . "</td>
-                            <td>" . $formatted_violation_details . "</td>
-                            <td>" . $violation_amount . "</td>
-                        </tr>";
+                                    <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                                    <td>" . $formatted_violation_details . "</td>
+                                    <td>" . $violation_amount . "</td>
+                                </tr>";
+                    $totalAmount += $violation_amount;
                 }
                 //check if OTHERS and OTHERS_P has value.
                 if ($discount['OTHERS'] !== null && $discount['OTHERS_P'] !== null) {
                     echo "<tr>
-                            <td>OTHERS</td>
-                            <td>" . htmlspecialchars($discount['OTHERS']) . "</td>
-                            <td>" . htmlspecialchars($discount['OTHERS_P']) . "</td>
-                        </tr>";
+                                    <td>OTHERS</td>
+                                    <td>" . htmlspecialchars($discount['OTHERS']) . "</td>
+                                    <td>" . htmlspecialchars($discount['OTHERS_P']) . "</td>
+                                </tr>";
+                    $totalAmount += $discount['OTHERS_P'];
                 }
             } else {
                 echo "<tr>
-                        <td>" . htmlspecialchars($violation['violation_type']) . "</td>
-                        <td>" . $formatted_violation_details . "</td>
-                        <td>" . $violation_amount . "</td>
-                    </tr>";
+                                <td>" . htmlspecialchars($violation['violation_type']) . "</td>
+                                <td>" . $formatted_violation_details . "</td>
+                                <td>" . $violation_amount . "</td>
+                            </tr>";
+                $totalAmount += $violation_amount;
             }
         }
     }
 
+    echo "<tr><td colspan='2'>Total</td><td>" . $totalAmount . "</td></tr>";
+
     if ($impoundFound) {
-        echo "<tr><td colspan='3' class='impound-warning'>THIS VIOLATOR IS SUBJECT FOR VEHICLE IMPOUND.</td></tr>";
+        echo "<tr><td colspan='3' class='impound-warning'>THIS VIOLATOR IS SUBJECT TO VEHICLE IMPOUND.</td></tr>";
     }
 
     if ($result->num_rows == 0) {
         echo "<tr><td colspan='3'>No violations found.</td></tr>";
     }
+
+    // Check for Multiple/Third Violation
+$result->data_seek(0); // Reset the result pointer
+    while ($violation = $result->fetch_assoc()) {
+        if ($violation['violation_type'] == 'Third Offense' || $violation['violation_type'] == 'Multiple Offense') {
+            echo "<tr><td colspan='3' class='license-confiscated-warning'>THIS VIOLATOR IS NOW SUBJECT TO VEHICLE IMPOUND AND LICENSE CONFISCATION FOR HAVING MULTIPLE VIOLATION RECORD. PLEASE COORDINATE WITH POSO BIÑAN FOR FURTHER DETAILS.</td></tr>";
+            break; // No need to check other rows
+        }
+    }
+
+    // Check if License is Confiscated
+    if ($confiscated == 'yes') {
+        echo "<tr><td colspan='3' class='license-confiscated-warning'>THIS VIOLATOR'S LICENSE HAS BEEN CONFISCATED.</td></tr>";
+    }
     ?>
 </tbody>
-            </table>
+                    </table>
 <br>
 <h4>NOTES:</h4>
 <ul>
@@ -268,15 +295,15 @@ echo "<li>" . htmlspecialchars($violation['notes']) . "</li>";
 </ul>
 <p class="compliance-message">PLEASE PROCEED TO OFFICE OF THE CITY TREASURER. THANK YOU FOR YOUR COMPLIANCE.</p>
 
-            <div class="button-container">
-                <button id="printButton" onclick="printReceipt()">Print</button>
-                <button id="nextButton" class="btn btn-secondary" onclick="goToNextPage()">Next</button>
+                <div class="button-container">
+                    <button id="printButton" onclick="printReceipt()">Print</button>
+                    <button id="nextButton" class="btn btn-secondary" onclick="goToNextPage()">Next</button>
 
+                </div>
             </div>
-        </div>
-    <?php else : ?>
-        <p>No violation records found for this individual.</p>
-    <?php endif; ?>
+        <?php else : ?>
+            <p>No violation records found for this individual.</p>
+        <?php endif; ?>
 </div>
 
 <script>
@@ -284,35 +311,35 @@ function printReceipt() {
 try {
 document.querySelector('.button-container').style.display = 'none';
 
-    if (typeof InnerPrinter !== "undefined" && InnerPrinter.print) {
-        const receiptContent = document.querySelector('.container').innerHTML;
+        if (typeof InnerPrinter !== "undefined" && InnerPrinter.print) {
+            const receiptContent = document.querySelector('.container').innerHTML;
 
-        const formattedContent = `
-            <html>
-                <head>
-                    <title>Receipt</title>
-                </head>
-                <body>
-                    ${receiptContent}
-                </body>
-            </html>
-        `;
+            const formattedContent = `
+                <html>
+                    <head>
+                        <title>Receipt</title>
+                    </head>
+                    <body>
+                        ${receiptContent}
+                    </body>
+                </html>
+            `;
 
-        InnerPrinter.print(formattedContent, function (success) {
-            if (success) {
-                alert("Printed successfully!");
-            } else {
-                alert("Failed to print. Please try again.");
-            }
-        });
-    } else {
-        window.print();
-    }
+            InnerPrinter.print(formattedContent, function (success) {
+                if (success) {
+                    alert("Printed successfully!");
+                } else {
+                    alert("Failed to print. Please try again.");
+                }
+            });
+        } else {
+            window.print();
+        }
 } catch (error) {
-    console.error("Printing error: ", error);
-    alert("Printing failed. Check your printer connection.");
+        console.error("Printing error: ", error);
+        alert("Printing failed. Check your printer connection.");
 } finally {
-    document.querySelector('.button-container').style.display = 'block';
+        document.querySelector('.button-container').style.display = 'block';
 }
 }
 

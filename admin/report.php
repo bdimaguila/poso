@@ -47,9 +47,10 @@ $sql = "
         r.last_name,
         d.STATUS as status,
         CASE
-            WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
-            WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
-            WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
+            WHEN mv.ticket_number IS NOT NULL THEN 'Multiple Offense'
+            WHEN v.ticket_number IS NOT NULL THEN 'First Offense'
+            WHEN v2.ticket_number IS NOT NULL THEN 'Second Offense'
+            WHEN v3.ticket_number IS NOT NULL THEN 'Third Offense'
             ELSE 'Unknown'
         END AS violation_level,
         CONCAT(
@@ -70,6 +71,7 @@ $sql = "
     LEFT JOIN
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
     LEFT JOIN discount as d ON r.ticket_number = d.ticket_number
+    LEFT JOIN m_violation as mv ON r.ticket_number = mv.ticket_number
     WHERE
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
@@ -78,11 +80,12 @@ $sql = "
 
 // Add a filter condition if a specific violation level or status is selected
 if ($filter) {
-    if (in_array($filter, ['First Violation', 'Second Violation', 'Third Violation'])) {
+    if (in_array($filter, ['First Offense', 'Second Offense', 'Third Offense', 'Multiple Offense'])) {
         $sql .= " AND CASE
-                        WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
-                        WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
-                        WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
+                        WHEN mv.ticket_number IS NOT NULL THEN 'Multiple Offense'
+                        WHEN v.ticket_number IS NOT NULL THEN 'First Offense'
+                        WHEN v2.ticket_number IS NOT NULL THEN 'Second Offense'
+                        WHEN v3.ticket_number IS NOT NULL THEN 'Third Offense'
                     END = :filter";
     } elseif ($filter === 'New') {
         $sql .= " AND r.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
@@ -122,6 +125,7 @@ $totalStmt = $conn->prepare("
     LEFT JOIN
         3_violation AS v3 ON r.ticket_number = v3.ticket_number
     LEFT JOIN discount as d ON r.ticket_number = d.ticket_number
+    LEFT JOIN m_violation as mv ON r.ticket_number = mv.ticket_number
     WHERE
         (r.ticket_number LIKE :searchTerm
         OR r.first_name LIKE :searchTerm
@@ -212,7 +216,7 @@ function isNewTicket($createdAt) {
     <link rel="stylesheet" href="/poso/admin/css/report1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   <style>
+    <style>
         .new-ticket {
             color: green;
             font-size: 0.8em;
@@ -222,10 +226,16 @@ function isNewTicket($createdAt) {
             color: green;
         }
         .status-unreleased {
+            color: yellow;
+        }
+        .status-red {
             color: red;
         }
         .status-unattended {
             color: orange;
+        }
+        .violation-multiple{
+            color: red;
         }
     </style>
 </head>
@@ -267,9 +277,10 @@ function isNewTicket($createdAt) {
                 <input type="text" name="search" placeholder="Search..." value="<?php echo htmlspecialchars($searchTerm); ?>">
                 <select name="filter">
                     <option value="">All</option>
-                    <option value="First Violation" <?php echo ($filter == 'First Violation') ? 'selected' : ''; ?>>First Violation</option>
-                    <option value="Second Violation" <?php echo ($filter == 'Second Violation') ? 'selected' : ''; ?>>Second Violation</option>
-                    <option value="Third Violation" <?php echo ($filter == 'Third Violation') ? 'selected' : ''; ?>>Third Violation</option>
+                    <option value="First Offense" <?php echo ($filter == 'First Offense') ? 'selected' : ''; ?>>First Offense</option>
+                    <option value="Second Offense" <?php echo ($filter == 'Second Offense') ? 'selected' : ''; ?>>Second Offense</option>
+                    <option value="Third Offense" <?php echo ($filter == 'Third Offense') ? 'selected' : ''; ?>>Third Offense</option>
+                    <option value="Multiple Offense" <?php echo ($filter == 'Multiple Offense') ? 'selected' : ''; ?>>Multiple Offense</option>
                     <option value="Paid" <?php echo ($filter == 'Paid') ? 'selected' : ''; ?>>Paid</option>
                     <option value="Unpaid" <?php echo ($filter == 'Unpaid') ? 'selected' : ''; ?>>Unpaid</option>
                     <option value="Pending" <?php echo ($filter == 'Pending') ? 'selected' : ''; ?>>Pending</option>
@@ -320,7 +331,7 @@ function isNewTicket($createdAt) {
                             <?php endif; ?>
                         </td>
                         <td><?php echo htmlspecialchars($report['first_name']) . ' ' . htmlspecialchars($report['last_name']); ?></td>
-                        <td><?php echo htmlspecialchars($report['violation_level']); ?></td>
+                        <td class="<?php if($report['violation_level'] == 'Multiple Offense') { echo "violation-multiple";}?>"><?php echo htmlspecialchars($report['violation_level']); ?></td>
                         <td><?php echo htmlspecialchars(getDiscountViolations($conn, $report['ticket_number'])); ?></td>
                         <td><?php echo htmlspecialchars($report['violation_date']); ?></td>
                         <td class="<?php

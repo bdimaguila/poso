@@ -199,9 +199,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <td>{$row['password']}</td>
                     <td><img src='data:image/jpeg;base64," . base64_encode($row['signature']) . "' height='50'/></td>
                     <td>Officer</td>
-                     <td class='btn-container'>
+                    <td>
                         <button class='btn btn-danger' onclick='showDeleteModal(\"officer\", {$row['ID']})'>Delete</button>
-                        <a href='update_off.php?user_id={$row['ID']}' class='btn-edit'>Edit</a>
+                        <a href='update_off.php?user_id={$row['ID']}' class='btn btn-primary'>Edit</a>
                     </td>
                     </tr>";
             }
