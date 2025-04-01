@@ -288,8 +288,10 @@ button:hover {
     padding: 8px;
     text-align: center;
     background-color: #FFFEF1 !important;
+    vertical-align: middle; /* Ensures vertical centering */
     overflow: hidden;
     text-overflow: ellipsis; 
+    white-space: nowrap; /* Prevents wrapping */
 }
 
 .table th {
@@ -313,27 +315,17 @@ td:nth-child(4) { /* Targets Password Column */
     position: relative;
 }
 
-.btn-container{
-    display: flex;
-    justify-content: center;
-    gap: 20px; 
-    align-items: center; 
-    width: 100%; 
-    box-sizing: border-box;
-}
 
 .btn-edit {
     display: flex;
     padding: 4px 8px;
     font-size: 14px;
-    text-align: center;
     border: 1px solid #ffffff;
     border-radius: 5px;
     background-color: #007bff;
     color: white;
     text-decoration: none;
-    transition: background-color 0.3s ease;
-    width: 50px;
+    width: 20px !important;
     min-width: 80px;
     justify-content: center;
     align-items: center;
@@ -343,6 +335,27 @@ td:nth-child(4) { /* Targets Password Column */
 
 .btn-edit:hover {
     background-color: #0056b3;
+    font-weight: bold;
+}
+
+
+/* Danger button (Delete User) */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    font-size: 14px;
+    padding: 4px 8px;
+    width: 20px !important;
+    min-width: 80px;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+}
+
+.btn-danger:hover {
+    background-color: #c82333;
+    border-color: #bd2130;
     font-weight: bold;
 }
 
@@ -360,26 +373,6 @@ td:nth-child(4) { /* Targets Password Column */
     font-weight: bold;
 }
 
-/* Danger button (Delete User) */
-.btn-danger {
-    background-color: #dc3545;
-    color: white;
-    border-color: #dc3545;
-    font-size: 14px;
-    padding: 4px 8px;
-    width: auto !important;
-    min-width: 80px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 35px;
-}
-
-.btn-danger:hover {
-    background-color: #c82333;
-    border-color: #bd2130;
-    font-weight: bold;
-}
 
 .card {
     position: fixed;
