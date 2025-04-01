@@ -239,15 +239,15 @@ $conn->close();
             </div>
             <div class="section">
                 <label for="street">Street:</label>
-                <input type="text" id="street" name="street" class="form-control">
+                <input type="text" id="street" name="street" required class="form-control">
                 <label for="plate_number">Plate Number:</label>
-                <input type="text" id="plate_number" name="plate_number" class="form-control">
+                <input type="text" id="plate_number" name="plate_number" required class="form-control">
                 <label for="city">City/Municipality:</label>
-                <input type="text" id="city" name="city" class="form-control">
+                <input type="text" id="city" name="city" required class="form-control">
                 <label for="registration">Registration Number:</label>
-                <input type="text" id="registration" name="registration" class="form-control">
+                <input type="text" id="registration" name="registration" required class="form-control">
                 <label for="vehicle_type">Vehicle Type:</label>
-                <select id="vehicle_type" name="vehicle_type" class="form-control">
+                <select id="vehicle_type" name="vehicle_type" required class="form-control">
                     <option value="">Select Vehicle Type</option>
                     <option value="Passenger Car">Passenger Car</option>
                     <option value="Motorcycle or Scooter">Motorcycle or Scooter</option>
@@ -258,7 +258,14 @@ $conn->close();
                     <option value="Heavy Equipment">Heavy Equipment Vehicle</option>
                 </select>
                 <label for="vehicle_owner">Vehicle Owner:</label>
-                <input type="text" id="vehicle_owner" name="vehicle_owner" class="form-control">
+                <input type="text" id="vehicle_owner" name="vehicle_owner" required class="form-control">
+                <label for="vehicle_status">Vehicle Status:</label>
+                <select id="vehicle_status" name="v_status" class="form-control">
+                    <option value="">Select Vehicle Status</option>
+                    <option value="Impounded">Impounded</option>
+                    <option value="Towed">Towed</option>
+                    <option value="Unattended">Unattended</option>
+                </select>
             </div>
 
             <div class="d-flex justify-content-between mt-3">
@@ -297,7 +304,7 @@ $(document).ready(function () {
                     // Auto-fill and disable fields
                     $("#first_name").val(result.data.first_name).prop("readonly", true);
                     $("#middle_name").val(result.data.middle_name).prop("readonly", true);
-$("#last_name").val(result.data.last_name).prop("readonly", true);
+                    $("#last_name").val(result.data.last_name).prop("readonly", true);
                     $("#dob").val(result.data.dob).prop("readonly", true);
                     $("#address").val(result.data.address).prop("readonly", true);
                 } else {

@@ -22,15 +22,16 @@ $city = $_POST['city'];
 $registration = $_POST['registration'];
 $vehicle_type = $_POST['vehicle_type'];
 $vehicle_owner = $_POST['vehicle_owner'];
+$v_status = $_POST['v_status'];
 
 // Prepare SQL statement to insert data
-$sql = "INSERT INTO report (ticket_number, first_name, middle_name, last_name, dob, address, license, confiscated, violation_date, violation_time, street, plate_number, city, registration, vehicle_type, vehicle_owner)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" ;
+$sql = "INSERT INTO report (ticket_number, first_name, middle_name, last_name, dob, address, license, confiscated, violation_date, violation_time, street, plate_number, city, registration, vehicle_type, vehicle_owner, v_status)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)" ;
 
 // Prepare the statement
 $stmt = $conn->prepare($sql);
 $stmt->bind_param(
-    "ssssssssssssssss",
+    "sssssssssssssssss",
     $ticket_number,
     $first_name,
     $middle_name,
@@ -46,7 +47,8 @@ $stmt->bind_param(
     $city,
     $registration,
     $vehicle_type,
-    $vehicle_owner
+    $vehicle_owner,
+    $v_status
 );
 
 // Execute the query and check if it was successful

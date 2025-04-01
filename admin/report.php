@@ -45,7 +45,7 @@ $sql = "
         r.violation_date,
         r.first_name,
         r.last_name,
-        d.STATUS as payment_status,
+        d.STATUS as status,
         CASE
             WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
             WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
@@ -80,14 +80,14 @@ $sql = "
 if ($filter) {
     if (in_array($filter, ['First Violation', 'Second Violation', 'Third Violation'])) {
         $sql .= " AND CASE
-                    WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
-                    WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
-                    WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
-                END = :filter";
+                        WHEN v.ticket_number IS NOT NULL THEN 'First Violation'
+                        WHEN v2.ticket_number IS NOT NULL THEN 'Second Violation'
+                        WHEN v3.ticket_number IS NOT NULL THEN 'Third Violation'
+                    END = :filter";
     } elseif ($filter === 'New') {
         $sql .= " AND r.created_at >= DATE_SUB(NOW(), INTERVAL 1 DAY)";
     } else {
-        // Filter by status (Paid, Unpaid, Pending, Overdue)
+        // Filter by status (Paid, Unpaid, Pending, Overdue, Impounded, Towed, Unattended, Released, Unreleased, License Confiscated)
         $sql .= " AND d.STATUS = :filter";
     }
 }
@@ -212,11 +212,23 @@ function isNewTicket($createdAt) {
     <link rel="stylesheet" href="/poso/admin/css/report1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
+   <style>
         .new-ticket {
             color: green;
             font-size: 0.8em;
             margin-left: 5px;
+        }
+        .status-released {
+            color: green;
+        }
+        .status-unreleased {
+            color: yellow;
+        }
+        .status-red {
+            color: red;
+        }
+        .status-unattended {
+            color: orange;
         }
     </style>
 </head>
@@ -266,6 +278,12 @@ function isNewTicket($createdAt) {
                     <option value="Pending" <?php echo ($filter == 'Pending') ? 'selected' : ''; ?>>Pending</option>
                     <option value="Overdue" <?php echo ($filter == 'Overdue') ? 'selected' : ''; ?>>Overdue</option>
                     <option value="New" style="display:none;">New</option>
+                    <option value="Impounded" <?php echo ($filter == 'Impounded') ? 'selected' : ''; ?>>Impounded</option>
+                    <option value="Towed" <?php echo ($filter == 'Towed') ? 'selected' : ''; ?>>Towed</option>
+                    <option value="Unattended" <?php echo ($filter == 'Unattended') ? 'selected' : ''; ?>>Unattended</option>
+                    <option value="Released" <?php echo ($filter == 'Released') ? 'selected' : ''; ?>>Released</option>
+                    <option value="Unreleased" <?php echo ($filter == 'Unreleased') ? 'selected' : ''; ?>>Unreleased</option>
+                    <option value="License Confiscated" <?php echo ($filter == 'License Confiscated') ? 'selected' : ''; ?>>License Confiscated</option>
                 </select>
                 <button type="submit"><i class="fas fa-search"></i> Search</button>
             </form>
@@ -309,24 +327,26 @@ function isNewTicket($createdAt) {
                         <td><?php echo htmlspecialchars(getDiscountViolations($conn, $report['ticket_number'])); ?></td>
                         <td><?php echo htmlspecialchars($report['violation_date']); ?></td>
                         <td class="<?php
-                            switch (htmlspecialchars($report['payment_status'])) {
-                                case 'Paid':
-                                    echo 'status-paid';
+                            switch (htmlspecialchars($report['status'])) {
+                                case 'Released':
+                                    echo 'status-released';
                                     break;
-                                case 'Unpaid':
-                                    echo 'status-unpaid';
+                                case 'Unreleased':
+                                    echo 'status-unreleased';
                                     break;
-                                case 'Overdue':
-                                    echo 'status-overdue';
+                                case 'Impounded':
+                                case 'Towed':
+                                case 'License Confiscated':
+                                    echo 'status-red';
                                     break;
-                                case 'Pending':
-                                    echo 'status-pending';
+                                case 'Unattended':
+                                    echo 'status-unattended';
                                     break;
                                 default:
                                     break;
                             }
                         ?>">
-                            <?php echo htmlspecialchars($report['payment_status']); ?>
+                            <?php echo htmlspecialchars($report['status']); ?>
                         </td>
                         <td>
                             <a href="sm.php?ticket_number=<?php echo htmlspecialchars($report['ticket_number']); ?>" class="pagination-btn">View</a>

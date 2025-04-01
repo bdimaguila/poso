@@ -134,7 +134,7 @@ if ($officer) {
     $officer_signature = $officer['o_signature'];
 }
 
-$isPaid = ($status === 'Paid');
+$isPaid = ($status === 'Released');
 
 ?>
 
@@ -339,14 +339,16 @@ $isPaid = ($status === 'Paid');
                         <div><strong>Status:</strong></div>
                         <div>
                             <select name="status" id="status-select" <?= $isPaid ? 'disabled' : '' ?>>
-                                <option value="Paid" <?= $status == 'Paid'? 'selected' : '' ?>>Paid</option>
-                                <option value="Unpaid" <?= $status == 'Unpaid' ? 'selected' : '' ?>>Unpaid</option>
-                                <option value="Overdue" <?= $status == 'Overdue' ? 'selected' : '' ?>>Overdue</option>
-                                <option value="Pending" <?= $status == 'Pending' ? 'selected' : '' ?>>Pending</option>
+                                <option value="Impounded" <?= $status == 'Impounded'? 'selected' : '' ?>>Impounded</option>
+                                <option value="Towed" <?= $status == 'Towed' ? 'selected' : '' ?>>Towed</option>
+                                <option value="Unattended" <?= $status == 'Unattended' ? 'selected' : '' ?>>Unattended</option>
+                                <option value="Released" <?= $status == 'Released' ? 'selected' : '' ?>>Released</option>
+                                <option value="Unreleased" <?= $status == 'Unreleased' ? 'selected' : '' ?>>Unreleased</option>
+                                <option value="License Confiscated" <?= $status == 'License Confiscated' ? 'selected' : '' ?>>License Confiscated</option>
                             </select>
                         </div>
                     </div>
-                    <div class="info-container" id="receipt-num-container" style="display: <?= $status == 'Paid' ? 'flex' : 'none' ?>;">
+                    <div class="info-container" id="receipt-num-container" style="display: <?= $status == 'Released' ? 'flex' : 'none' ?>;">
                         <div><strong>Receipt Number:</strong></div>
                         <div>
                             <input type="text" name="receipt_num" value="<?= htmlspecialchars($receipt_num) ?>" <?= $isPaid ? 'readonly' : '' ?>>
@@ -446,7 +448,7 @@ $isPaid = ($status === 'Paid');
 
             // Show/hide receipt number input
             $('#status-select').on('change', function() {
-                if ($(this).val() === 'Paid') {
+                if ($(this).val() === 'Released') {
                     $('#receipt-num-container').show();
                 } else {
                     $('#receipt-num-container').hide();

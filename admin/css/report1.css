@@ -338,23 +338,23 @@ tbody td {
 
 /* Conditional styling for payment status */
 
-td.status-paid{
+td.status-released{
     color: green;
     font-weight: bold;
 }
 
-td.status-unpaid {
+td.status-red {
     color: red;
     font-weight: bold;
 }
 
-td.status-overdue {
+td.status-unattended {
     color: orange;
     font-weight: bold;
 }
 
-td.status-pending {
-    color: rgb(0, 251, 255);
+td.status-unreleased {
+    color: yellow;
     font-weight: bold;
 }
 

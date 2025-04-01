@@ -2,7 +2,6 @@
 // Start the session
 session_start();
 
-
 // Database connection (adjust with your DB settings)
 $conn = new mysqli('localhost', 'root', '', 'poso'); // Update with your DB details
 
@@ -12,7 +11,7 @@ if ($conn->connect_error) {
 }
 
 // Fetch tickets from the 'report' table
-$sql = "SELECT ticket_number, created_at FROM report ORDER BY created_at DESC";
+$sql = "SELECT ticket_number, first_name, last_name, license, created_at FROM report ORDER BY created_at DESC";
 $result = $conn->query($sql);
 ?>
 
@@ -23,12 +22,11 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket History</title>
-    <!-- Bootstrap CSS -->
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.3/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css?v=1.0">
     <style>
         .ticket-history-container {
-            width: 80%;
+            width: 95%; /* Adjust width as needed */
             margin: auto;
             margin-top: 30px;
         }
@@ -73,11 +71,13 @@ $result = $conn->query($sql);
         <div class="ticket-history-container">
             <h3 class="text-center">Ticket History</h3>
 
-            <!-- Ticket History Table -->
             <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Ticket Number</th>
+                        <th>Name</th>
+                        <th>License</th>
+                        <th>Created By</th>
                         <th>Date and Time Created</th>
                     </tr>
                 </thead>
@@ -87,13 +87,36 @@ $result = $conn->query($sql);
                     if ($result->num_rows > 0) {
                         // Output data of each row
                         while ($row = $result->fetch_assoc()) {
+                            $ticketNumber = $row['ticket_number'];
+                            $name = $row['first_name'] . " " . $row['last_name'];
+                            $license = $row['license'];
+                            $createdBy = "Unknown"; // Default value
+
+                            // Check violation tables for creator
+                            $violationTables = ['violation', '2_violation', '3_violation'];
+                            $officerFields = ['o_firstname', 'o_lastname', '2o_firstname', '2o_lastname', '3o_firstname', '3o_lastname'];
+
+                            foreach ($violationTables as $index => $table) {
+                                $sqlOfficer = "SELECT " . $officerFields[$index * 2] . ", " . $officerFields[$index * 2 + 1] . " FROM $table WHERE ticket_number = '$ticketNumber'";
+                                $officerResult = $conn->query($sqlOfficer);
+
+                                if ($officerResult && $officerResult->num_rows > 0) {
+                                    $officerRow = $officerResult->fetch_assoc();
+                                    $createdBy = $officerRow[$officerFields[$index * 2]] . " " . $officerRow[$officerFields[$index * 2 + 1]];
+                                    break; // Found the creator, no need to check other tables
+                                }
+                            }
+
                             echo "<tr>
-                                    <td>{$row['ticket_number']}</td>
+                                    <td>{$ticketNumber}</td>
+                                    <td>{$name}</td>
+                                    <td>{$license}</td>
+                                    <td>{$createdBy}</td>
                                     <td>" . date('Y-m-d H:i:s', strtotime($row['created_at'])) . "</td>
-                                  </tr>";
+                                </tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='2'>No tickets found.</td></tr>";
+                        echo "<tr><td colspan='5'>No tickets found.</td></tr>";
                     }
 
                     // Close the database connection
@@ -102,7 +125,6 @@ $result = $conn->query($sql);
                 </tbody>
             </table>
 
-            <!-- Back to Main Menu Button -->
             <div class="btn-container">
                 <a href="menu.php">Back to Main Menu</a>
             </div>
