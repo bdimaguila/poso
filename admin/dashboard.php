@@ -1,3 +1,4 @@
+
 <?php
 // Start the session
 session_start();
@@ -96,25 +97,15 @@ $ticketCount = $rowTicketCount['ticket_count'];
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>Home</title>
     <link rel="stylesheet" href="/poso/admin/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        .number-display {
-            color: white;
-            font-size: 3em;
-            text-align: center;
-        }
-        .container a {
-            text-decoration: none;
-            color: inherit;
-        }
-    </style>
+
 </head>
+
 <body>
     <div id="overlay"></div>
-    <img class="bg" src="/POSO/images/db.jpg" alt="Background Image">
 
     <div class="main-content">
         <header class="navbar">
@@ -124,54 +115,109 @@ $ticketCount = $rowTicketCount['ticket_count'];
                 <p class="city">CITY OF BIÑAN, LAGUNA</p>
             </div>
             <img src="/POSO/images/arman.png" alt="POSO Logo" class="logo">
+            
             <div class="hamburger" id="hamburger-icon">
                 <i class="fa fa-bars"></i>
             </div>
-            <div class="sidebar" id="sidebar">
-                <div class="logo">
-                    <img src="/POSO/images/right.png" alt="POSO Logo">
-                </div>
-                <ul>
-                    <li><a href="dashboard.php" class="active"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
-                    <li><a href="report.php"><i class="fas fa-file-alt"></i> Reports</a></li>
-                    <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
-                    <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                </ul>
-            </div>
         </header>
 
-        <div class="data-analytics-container">
-            <h1 class="data" style="text-align: center; color:white;">DATA ANALYTICS</h1> <br><br>
-            <div class="analytics-container">
-                <div class="container">
-                    <div class="c1">
-                    <a href="report.php?filter=New" class="DA">
-                        <h2>New Tickets</h2> <br><br>
-                        <div class="number-display">
-                            <?php echo $newTicketsCount; ?>
-                        </div>
-                    </a>
-                 </div>
-                </div>
-                <div class="container">
-                <div class="c2">
-                    <a href="report.php?filter=Overdue">
-                        <h2>Overdue Tickets</h2>  <br><br>
-                        <div class="number-display">
-                            <?php echo $overdueTicketsCount; ?>
-                        </div>
-                    </a>
-                    </div>
-                </div>
-                <div class="container">
-                    <h2>Ticket Count</h2>  <br><br>
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="/POSO/images/right.png" alt="POSO Logo">
+            </div>
+            <ul>
+                <li><a href="dashboard.php" class="active"> <i class="fas fa-home"></i> Home</a></li>
+                <li><a href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="report.php"> <i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+       
+    <!-- start slider -->
+<br><br>
+<div class="slider">
+    <div class="slide-track">
+        <!-- First set of slides -->
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg1.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg8.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg3.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg4.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg5.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg6.jpg">
+        </div>
+
+        <!-- Second set of slides -->
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg7.webp">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg2.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg9.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg10.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg11.jpg">
+        </div>
+        <div class="slide">
+            <img class="carousel" src="/POSO/images/bg12.jpg">
+        </div>
+    </div>
+</div>
+<!-- end slider -->
+
+<!-- data analytics container -->
+<div class="data-analytics-container">
+    <h1 class="data" style="text-align: center; color:white;">DATA ANALYTICS</h1> <br><br>
+    <div class="analytics-container">
+        <div class="container">
+            <div class="c1">
+                <a href="report.php?filter=New" class="DA">
+                    <h2>New Tickets</h2> <br><br>
                     <div class="number-display">
-                        <?php echo $ticketCount; ?>
+                        <?php echo $newTicketsCount; ?>
                     </div>
+                </a>
+            </div>
+        </div>
+        <div class="container">
+            <div class="c2">
+                <a href="report.php?filter=Overdue">
+                    <h2>Overdue Tickets</h2>  <br><br>
+                    <div class="number-display">
+                        <?php echo $overdueTicketsCount; ?>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <!-- Add the class container-with-c3 here -->
+        <div class="container container-with-c3">
+            <div class="c3">
+                <h2>Ticket Count</h2>  <br><br>
+                <div class="number-display">
+                    <?php echo $ticketCount; ?>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
 
         <script>
             //hamburger and sidebar
@@ -197,6 +243,6 @@ $ticketCount = $rowTicketCount['ticket_count'];
                 }
             });
         </script>
-    </div>
+
 </body>
 </html>
