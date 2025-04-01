@@ -281,9 +281,7 @@ function isNewTicket($createdAt) {
                     <option value="Second Offense" <?php echo ($filter == 'Second Offense') ? 'selected' : ''; ?>>Second Offense</option>
                     <option value="Third Offense" <?php echo ($filter == 'Third Offense') ? 'selected' : ''; ?>>Third Offense</option>
                     <option value="Multiple Offense" <?php echo ($filter == 'Multiple Offense') ? 'selected' : ''; ?>>Multiple Offense</option>
-                    <option value="Paid" <?php echo ($filter == 'Paid') ? 'selected' : ''; ?>>Paid</option>
-                    <option value="Unpaid" <?php echo ($filter == 'Unpaid') ? 'selected' : ''; ?>>Unpaid</option>
-                    <option value="Pending" <?php echo ($filter == 'Pending') ? 'selected' : ''; ?>>Pending</option>
+
                     <option value="Overdue" <?php echo ($filter == 'Overdue') ? 'selected' : ''; ?>>Overdue</option>
                     <option value="New" style="display:none;">New</option>
                     <option value="Impounded" <?php echo ($filter == 'Impounded') ? 'selected' : ''; ?>>Impounded</option>
