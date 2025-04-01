@@ -77,22 +77,93 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <!DOCTYPE html>
 <html>
 <head>
+
     <title>Edit Officer Details</title>
+    <link rel="icon" href="/POSO/images/poso.png" type="image/png">
+    <link rel="stylesheet" href="/poso/admin/css/editofficer.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+
 </head>
 <body>
-    <h2>Edit Officer Details</h2>
+<img class="bg" src="/POSO/images/plaza.jpg" alt="Background Image">
+
+<div id="overlay"></div>
+
+<header class="navbar">
+            <img src="/POSO/images/left.png" alt="City Logo" class="logo">
+            <div>
+                <p class="public">PUBLIC ORDER & SAFETY OFFICE</p>
+                <p class="city">CITY OF BIÑAN, LAGUNA</p>
+            </div>
+            <img src="/POSO/images/arman.png" alt="POSO Logo" class="logo">
+            
+            <div class="hamburger" id="hamburger-icon">
+                <i class="fa fa-bars"></i>
+            </div>
+        </header>
+
+        <div class="sidebar" id="sidebar">
+            <div class="logo">
+                <img src="/POSO/images/right.png" alt="POSO Logo">
+            </div>
+            <ul>
+                <li><a href="dashboard.php" > <i class="fas fa-home"></i> Home</a></li>
+                <li><a href="profile.php"><i class="fas fa-user"></i> Profile</a></li>
+                <li><a href="report.php" class="active"><i class="fas fa-file-alt"></i> Reports</a></li>
+                <li><a href="settings.php"><i class="fas fa-cog"></i> Settings</a></li>
+                <li><a href="logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+            </ul>
+        </div>
+
+   <div class="form">     
+   <div style="text-align: center;">
+    <h2 class="edit">Edit Officer Details</h2> <br><br>
+</div>
     <?php if (isset($_SESSION['error'])) : ?>
         <p style="color: red;"><?php echo $_SESSION['error']; ?></p>
         <?php unset($_SESSION['error']); ?>
     <?php endif; ?>
+    
     <form method="post" enctype="multipart/form-data">
         First Name: <input type="text" name="firstname" value="<?php echo htmlspecialchars($firstname); ?>"><br>
         Last Name: <input type="text" name="lastname" value="<?php echo htmlspecialchars($lastname); ?>"><br>
         Username: <input type="text" name="username" value="<?php echo htmlspecialchars($username); ?>"><br>
         Email: <input type="email" name="email" value="<?php echo htmlspecialchars($email); ?>"><br>
-        Password: <input type="password" name="password" placeholder="Leave blank to keep current password"><br>
-        Signature: <input type="file" name="signature"><br>
-        <input type="submit" value="Update">
+        Password: <input type="password" name="password" placeholder="Leave blank to keep current password"><br><br>
+        Signature: <input type="file" name="signature"><br><br><br>
+        <div class="container">
+    <input type="submit" value="Submit">
+        </div>
     </form>
+
+    </div>
+    <script>
+        //hamburger and sidebar
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        hamburgerIcon.addEventListener('click', function(event) {
+            sidebar.classList.toggle('show'); // Toggle sidebar
+            overlay.classList.toggle('show'); // Show overlay
+            event.stopPropagation(); // Prevent immediate close
+        });
+
+        // Close sidebar & overlay when clicking on the overlay
+        overlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            overlay.classList.remove('show');
+        });
+
+        // Close sidebar & overlay when clicking outside of the sidebar
+        document.addEventListener('click', function(event) {
+            if (!sidebar.contains(event.target) && !hamburgerIcon.contains(event.target)) {
+                sidebar.classList.remove('show');
+                overlay.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings</title>
-    <link rel="stylesheet" href="/poso/admin/css/settings1.css">
+    <link rel="stylesheet" href="/poso/admin/css/settings.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     
@@ -199,9 +199,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <td>{$row['password']}</td>
                     <td><img src='data:image/jpeg;base64," . base64_encode($row['signature']) . "' height='50'/></td>
                     <td>Officer</td>
-                    <td>
+                     <td class='btn-container'>
                         <button class='btn btn-danger' onclick='showDeleteModal(\"officer\", {$row['ID']})'>Delete</button>
-                        <a href='update_off.php?user_id={$row['ID']}' class='btn btn-primary'>Edit</a>
+                        <a href='update_off.php?user_id={$row['ID']}' class='btn-edit'>Edit</a>
                     </td>
                     </tr>";
             }

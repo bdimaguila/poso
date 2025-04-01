@@ -222,9 +222,6 @@ function isNewTicket($createdAt) {
             color: green;
         }
         .status-unreleased {
-            color: yellow;
-        }
-        .status-red {
             color: red;
         }
         .status-unattended {

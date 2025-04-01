@@ -277,7 +277,7 @@ button:hover {
 .table {
     width: 100%; 
     max-width: 1500px; 
-    table-layout: fixed; 
+    table-layout: auto; 
     word-wrap: break-word;
     white-space: nowrap; 
     border-collapse: collapse; 
@@ -313,6 +313,39 @@ td:nth-child(4) { /* Targets Password Column */
     position: relative;
 }
 
+.btn-container{
+    display: flex;
+    justify-content: center;
+    gap: 20px; 
+    align-items: center; 
+    width: 100%; 
+    box-sizing: border-box;
+}
+
+.btn-edit {
+    display: flex;
+    padding: 4px 8px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    width: 50px;
+    min-width: 80px;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.637); 
+}
+
+.btn-edit:hover {
+    background-color: #0056b3;
+    font-weight: bold;
+}
+
 /* Success button (Add User) */
 .btn-success {
     background-color: #28a745;
@@ -339,7 +372,6 @@ td:nth-child(4) { /* Targets Password Column */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: auto; 
     height: 35px;
 }
 
