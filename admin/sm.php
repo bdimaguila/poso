@@ -167,7 +167,7 @@ $isPaid = ($status === 'Released');
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"> </script>
-    <link rel="stylesheet" href="/poso/admin/css/sm1.css">
+    <link rel="stylesheet" href="/poso/admin/css/sm.css">
 </head>
 <body>
 <div id="overlay"></div>
@@ -405,6 +405,7 @@ $isPaid = ($status === 'Released');
             <div style="text-align: center;">
                 <button type="submit" class="update-btn" <?= $isPaid ? 'style="display:none;"' : '' ?>>Update</button>
                 <a href="vb.php?ticket_number=<?= htmlspecialchars($report['ticket_number']) ?>" class="see" <?= $isPaid ? 'style="display:none;"' : '' ?>>See Breakdown of Violations</a>
+                <a href="report.php" class="back">  Back to Reports </a>
             </div>
         </form>
     </div>

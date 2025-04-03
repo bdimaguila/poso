@@ -105,6 +105,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 <div class="container d-flex justify-content-center align-items-center">
     <form class="card mt-5" id="userForm" method="POST" enctype="multipart/form-data">
+        
+            <!-- Exit "X" Button -->
+            <button type="button" class="position-fixed" 
+                style="top: -9px; right: 10px;  width: 30px; height: 30px; font-weight: bold; font-size: 19px; padding: 0;" 
+                onclick="closeForm()">X</button>
+
         <label for="firstname">First Name:</label>
         <input type="text" id="firstname" name="firstname" required>
 
@@ -130,7 +136,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </select>
 
 <button type="submit" name="add_user" class="btn btn-success" style="margin-top: 35px; display: block; margin-left: auto; margin-right: auto;">Submit</button>
-    </form>
+
+</form>
 </div>
 
 <div class="sidebar" id="sidebar">
@@ -286,6 +293,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 modal.style.display = "none";
             }
         }
+
+
     </script>
 
     <style>

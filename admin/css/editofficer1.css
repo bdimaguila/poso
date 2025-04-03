@@ -268,6 +268,26 @@ letter-spacing: 4px;
 }
 
 /* Button styling */
+
+.btn-secondary{
+    padding: 10px 20px; /* Spacing inside the button */
+    font-size: 14px; 
+    border-radius: 5px;
+    background-color: #1161ca;
+    color: white;
+    border: 1px solid white; /* Removes default border */
+    cursor: pointer; /* Pointer cursor on hover */
+    margin-right: 20px;
+    box-shadow: 0px 4px 6px rgb(0, 0, 0); 
+}
+
+.btn-secondary:hover{
+    font-weight: bold;
+    background-color: #0e4c9c;
+    transform: scale(1.05); /* Slight zoom effect */
+
+}
+
 input[type="submit"] {
     background-color: #00463d; /* Dark blue background */
     color: white; /* White text */
@@ -277,6 +297,8 @@ input[type="submit"] {
     border-radius: 5px; /* Smooth rounded corners */
     cursor: pointer; /* Pointer cursor on hover */
     transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 4px 6px rgb(0, 0, 0); 
+
 }
 
 input[type="submit"]:hover {

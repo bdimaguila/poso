@@ -80,7 +80,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <title>Edit Officer Details</title>
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
-    <link rel="stylesheet" href="/poso/admin/css/editofficer.css">
+    <link rel="stylesheet" href="/poso/admin/css/editofficer1.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
@@ -134,6 +134,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         Password: <input type="password" name="password" placeholder="Leave blank to keep current password"><br><br>
         Signature: <input type="file" name="signature"><br><br><br>
         <div class="container">
+        <button id="previousButton" class="btn btn-secondary"     
+        onclick="goToPreviousPage()">Back</button>
+
     <input type="submit" value="Submit">
         </div>
     </form>
