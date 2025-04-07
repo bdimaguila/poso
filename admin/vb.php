@@ -56,7 +56,7 @@ $license_status = ($confiscated == 'yes') ? 'Confiscated' : 'Not Confiscated';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>POSO Violation Receipt</title>
-    <link rel="stylesheet" href="./css/style1.css?v=1.0">
+    <link rel="stylesheet" href="./css/style1.css?v=2.0">
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <style>
         .impound-warning, .license-confiscated-warning {
