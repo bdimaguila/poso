@@ -24,21 +24,21 @@ $violations_data = [];
 // Fetch all violations for the given ticket number and/or license number
 if ($ticket_number && $license_number) {
     $query = "
-        SELECT v.ticket_number, v.first_name, v.last_name, v.first_violation AS violation, v.first_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number, v.first_violation AS violation, v.first_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE v.ticket_number = ? AND r.license = ?
         
         UNION
         
-        SELECT v.ticket_number, v.first_name, v.last_name, v.second_violation AS violation, v.second_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number,  v.second_violation AS violation, v.second_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM 2_violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE v.ticket_number = ? AND r.license = ?
         
         UNION
         
-        SELECT v.ticket_number, v.first_name, v.last_name, v.third_violation AS violation, v.third_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number,  v.third_violation AS violation, v.third_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM 3_violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE v.ticket_number = ? AND r.license = ?
@@ -50,21 +50,21 @@ if ($ticket_number && $license_number) {
 } elseif ($ticket_number) {
     // Fetch data only based on ticket number
     $query = "
-        SELECT v.ticket_number, v.first_name, v.last_name, v.first_violation AS violation, v.first_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number, v.first_violation AS violation, v.first_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE v.ticket_number = ?
         
         UNION
         
-        SELECT v.ticket_number, v.first_name, v.last_name, v.second_violation AS violation, v.second_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number,  v.second_violation AS violation, v.second_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM 2_violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE v.ticket_number = ?
         
         UNION
         
-        SELECT v.ticket_number, v.first_name, v.last_name, v.third_violation AS violation, v.third_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number, v.third_violation AS violation, v.third_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM 3_violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE v.ticket_number = ?
@@ -76,21 +76,21 @@ if ($ticket_number && $license_number) {
 } elseif ($license_number) {
     // Fetch data only based on license number
     $query = "
-        SELECT v.ticket_number, v.first_name, v.last_name, v.first_violation AS violation, v.first_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number, v.first_violation AS violation, v.first_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE r.license = ?
         
         UNION
         
-        SELECT v.ticket_number, v.first_name, v.last_name, v.second_violation AS violation, v.second_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number, v.second_violation AS violation, v.second_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM 2_violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE r.license = ?
         
         UNION
         
-        SELECT v.ticket_number, v.first_name, v.last_name, v.third_violation AS violation, v.third_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
+        SELECT v.ticket_number, v.third_violation AS violation, v.third_total AS amount, v.status, r.confiscated, r.violation_date, r.violation_time, r.license 
         FROM 3_violation v
         JOIN report r ON v.ticket_number = r.ticket_number 
         WHERE r.license = ?
@@ -116,7 +116,7 @@ if (isset($_GET['clear'])) {
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/POSO/tracker/css/tracker.css">
+    <link rel="stylesheet" href="/POSO/tracker/css/tracker1.css">
     <title>POSO Violation Tracker</title>
     <style>
         .no-data {
@@ -148,7 +148,7 @@ if (isset($_GET['clear'])) {
                     <input type="text" id="ticket_number" name="ticket_number" placeholder="Ticket Number" value="<?php echo $ticket_number; ?>">
                     <input type="text" id="license_number" name="license_number" placeholder="License Number" value="<?php echo $license_number; ?>">
                     <?php if ($ticket_number || $license_number): ?>
-                        <a href="?clear=true" class="clear-search">CLEAR</a>
+                        <a href="?clear=true" class="clear-search">Clear</a>
                     <?php endif; ?>
                     &nbsp;&nbsp;<button type="submit">Search</button>
                 </div>
@@ -165,7 +165,6 @@ if (isset($_GET['clear'])) {
                     <?php if (!empty($license_number)): ?>
                         <th>License Number</th>
                     <?php endif; ?>
-                    <th>Violator's Name</th>
                     <th>Violation</th>
                     <th>Amount</th>
                     <th>Payment Status</th>
@@ -181,7 +180,6 @@ if (isset($_GET['clear'])) {
                         <?php if (!empty($license_number)): ?>
                             <td><?php echo $violation['license']; ?></td>
                         <?php endif; ?>
-                        <td><?php echo $violation['first_name'] . ' ' . $violation['last_name']; ?></td>
                         <td><?php echo $violation['violation']; ?></td>
                         <td><?php echo $violation['amount']; ?></td>
                         <td class="<?php echo ($violation['status'] == 'Paid' ? 'paid' : 'unpaid'); ?>">
@@ -197,5 +195,20 @@ if (isset($_GET['clear'])) {
     <?php elseif (($ticket_number || $license_number) && empty($violations_data)): ?>
         <p class="no-data">No data found for the provided ticket number or license number.</p>
     <?php endif; ?>
+
+
+    <script>
+    window.addEventListener('load', function () {
+        var ths = document.querySelectorAll('table th');
+        var tds = document.querySelectorAll('table td');
+        
+        for (let i = 0; i < ths.length; i++) {
+            let correspondingTd = tds[i];
+            ths[i].style.height = correspondingTd.offsetHeight + 'px';
+        }
+    });
+</script>
+
+
 </body>
 </html>
