@@ -17,6 +17,7 @@ $result = $conn->query($sql);
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <link rel="icon" href="/POSO/images/poso.png" type="image/png">
     <meta charset="UTF-8">
@@ -26,7 +27,8 @@ $result = $conn->query($sql);
     <link rel="stylesheet" href="style.css?v=1.0">
     <style>
         .ticket-history-container {
-            width: 95%; /* Adjust width as needed */
+            width: 95%;
+            /* Adjust width as needed */
             margin: auto;
             margin-top: 30px;
         }
@@ -36,7 +38,8 @@ $result = $conn->query($sql);
             margin-top: 20px;
         }
 
-        th, td {
+        th,
+        td {
             text-align: center;
             padding: 10px;
             border: 1px solid #ddd;
@@ -64,8 +67,25 @@ $result = $conn->query($sql);
         .btn-container a:hover {
             background-color: #0056b3;
         }
+
+        .print-link {
+            background-color: #28a745;
+            /* Green color for print */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            /* Remove underline from link */
+        }
+
+        .print-link:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="ticket-history-container">
@@ -79,6 +99,7 @@ $result = $conn->query($sql);
                         <th>License</th>
                         <th>Created By</th>
                         <th>Date and Time Created</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -113,10 +134,13 @@ $result = $conn->query($sql);
                                     <td>{$license}</td>
                                     <td>{$createdBy}</td>
                                     <td>" . date('Y-m-d H:i:s', strtotime($row['created_at'])) . "</td>
-                                </tr>";
+                                    <td>
+                                        <a href='/poso/admin/vb.php?ticket_number={$ticketNumber}' class='print-link'>Print</a>
+                                    </td>
+                                  </tr>";
                         }
                     } else {
-                        echo "<tr><td colspan='5'>No tickets found.</td></tr>";
+                        echo "<tr><td colspan='6'>No tickets found.</td></tr>";
                     }
 
                     // Close the database connection
@@ -131,4 +155,5 @@ $result = $conn->query($sql);
         </div>
     </div>
 </body>
+
 </html>
